@@ -12,9 +12,9 @@ stdenv.mkDerivation rec {
   installPhase = ''
     mkdir -p $out/
     cp -R . $out/
-    cd $out
-    rm -Rf config
-    ln -s /var/lib/nextcloud/config config
+    #cd $out
+    #rm -Rf config
+    #ln -s /var/lib/nextcloud/config config
   '';
 
   meta = {
