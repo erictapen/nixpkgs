@@ -17,7 +17,8 @@ let
 
   #nextcloudConfig = pkgs.writeText "config.php" ''
   nextcloudConfig = ''
-        'overwrite.cli.url' => 'http://drschiele.de',
+        'logfile' => '/tmp/nextcloud.log',
+        'loglevel' => 0,
         'trusted_domains' => 
         array (
           0 => 'drschiele.de',
@@ -1507,15 +1508,18 @@ rec {
 
       ${pkgs.sudo}/bin/sudo -u wwwrun ${php}/bin/php ${config.package}/occ maintenance:install --database "pgsql" --database-name "${config.dbName}"  --database-user "${config.dbUser}" --database-pass "${config.dbPassword}" --admin-user "${config.adminUser}" --admin-pass "${config.adminPassword}"  >> ${config.dataDir}/install.log || true
 
-      #chown root:root ${config.dataDir}/config/config.php
       echo "${nextcloudConfig}" > ${config.dataDir}/config/config.php_additions
       sed 's|);||' ${config.dataDir}/config/config.php > ${config.dataDir}/config/config.php_
       mv ${config.dataDir}/config/config.php_ ${config.dataDir}/config/config.php
       cat ${config.dataDir}/config/config.php_additions >> ${config.dataDir}/config/config.php
+      chown wwwrun:wwwrun ${config.dataDir}/config/config.php
+      ${pkgs.sudo}/bin/sudo -u wwwrun ${php}/bin/php ${config.package}/occ upgrade >> ${config.dataDir}/upgrade.log || true
+      chown root:root ${config.dataDir}/config/config.php
+      chmod  ugo+r ${config.dataDir}/config/config.php
+      cp ${config.dataDir}/config/config.php ${config.dataDir}/config/config.php_orig
 
 # maintenance:install [--database DATABASE] [--database-name DATABASE-NAME] [--database-host DATABASE-HOST] [--database-port DATABASE-PORT] [--database-user DATABASE-USER] [--database-pass [DATABASE-PASS]] [--database-table-prefix [DATABASE-TABLE-PREFIX]] [--admin-user ADMIN-USER] [--admin-pass ADMIN-PASS] [--data-dir DATA-DIR]
     fi
-    #${pkgs.sudo}/bin/sudo -u wwwrun ${php}/bin/php ${config.dataDir}/occ upgrade >> ${config.dataDir}/upgrade.log || true
 
     ${pkgs.sudo}/bin/sudo -u wwwrun touch ${config.dataDir}/nextcloud.log
     chown wwwrun:wwwrun ${config.dataDir}/nextcloud.log || true

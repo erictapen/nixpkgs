@@ -4,12 +4,15 @@ stdenv.mkDerivation rec {
   name= "nextcloud-${version}";
   version = "10.0.1";
 
+  #src = /root/nextcloud;
+
   src = fetchurl {
     url = "https://download.nextcloud.com/server/releases/${name}.tar.bz2";
     sha256 = "09cbjxsr6sdjrq37rmwmg6r1x3625bqcrd37ja6cmmrgy0l2lh9r";
   };
 
   patchPhase = ''
+    # allows a readonly config.php to be used
     sed 's|configFileWritable = |configFileWritable = true;//|g' lib/base.php > lib/a
     mv lib/a lib/base.php
   '';
