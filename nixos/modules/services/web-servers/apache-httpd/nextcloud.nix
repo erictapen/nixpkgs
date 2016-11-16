@@ -15,21 +15,13 @@ let
     Allow from all
   '';
 
-  nextcloudConfig = pkgs.writeText "config.php" ''
-      <?php
-      $CONFIG = array (
+  #nextcloudConfig = pkgs.writeText "config.php" ''
+  nextcloudConfig = ''
+        'overwrite.cli.url' => 'http://drschiele.de',
         'trusted_domains' => 
         array (
           0 => 'drschiele.de',
         ),
-        'datadirectory' => '/var/lib/nextcloud/data',
-        'overwrite.cli.url' => 'http://drschiele.de',
-        'dbtype' => 'pgsql',
-        'dbname' => 'nextcloud',
-        'dbhost' => 'localhost',
-        'dbtableprefix' => 'oc_',
-        'dbuser' => 'nextcloud',
-        'dbpassword' => 'hallo',
       );
     '';
 
@@ -1272,21 +1264,22 @@ rec {
 
   extraConfig =
     ''
-      ${if config.urlPrefix != "" then "Alias ${config.urlPrefix} /var/lib/nextcloud" else ''
+      ${if config.urlPrefix != "" then "Alias ${config.urlPrefix} ${config.package}" else ''
         RewriteEngine On
         RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
         RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-d
       ''}
 
-      <Directory /var/lib/nextcloud>
+      <Directory ${config.package}>
         Require all granted
+        Options FollowSymLinks 
         ${builtins.readFile "${config.package}/.htaccess"}
       </Directory>
     '';
 
-  globalEnvVars = [
-    { name = "OC_CONFIG_PATH"; value = "/var/lib/nextcloud/config/"; }
-  ];
+  #globalEnvVars = [
+  #  { name = "OC_CONFIG_PATH"; value = "/var/lib/nextcloud/config/"; }
+  #];
 
   documentRoot = if config.urlPrefix == "" then config.package else null;
 
@@ -1490,17 +1483,19 @@ rec {
   };
 
   startupScript = pkgs.writeScript "nextcloud_startup.sh" ''
+
+    /nix/store/bw6w1igxrpzgbqi7xbhvfd6vn23dcmgq-postgresql-9.4.9/bin/dropdb nextcloud
+    rm -Rf /var/lib/nextcloud
     if [ ! -d ${config.dataDir}/ ]; then
       mkdir -p ${config.dataDir}/
-      cp -R ${config.package}/* ${config.dataDir}/
-
       mkdir -p ${config.dataDir}/config/
-      rm ${config.dataDir}/config/config.php
-      cp ${nextcloudConfig} ${config.dataDir}/config/config.php
+      mkdir -p ${config.dataDir}/apps/
+      cp -R ${config.package}/apps_/* ${config.dataDir}/apps/
+      mkdir -p ${config.dataDir}/data/
 
-      mkdir -p ${config.dataDir}/storage
-      touch ${config.dataDir}/storage/.ocdata 
-      mkdir -p ${config.dataDir}/apps
+
+      rm ${config.dataDir}/config/config*
+
       chmod -R ug+rw ${config.dataDir}
       chmod -R o-rwx ${config.dataDir}
       chown -R wwwrun:wwwrun ${config.dataDir}
@@ -1510,22 +1505,20 @@ rec {
       ${pkgs.postgresql}/bin/createdb "${config.dbName}" -O "${config.dbUser}" || true
       ${pkgs.sudo}/bin/sudo -u postgres ${pkgs.postgresql}/bin/psql -U postgres -d postgres -c "alter user ${config.dbUser} with password '${config.dbPassword}';" || true
 
-      #QUERY="CREATE TABLE appconfig (appid VARCHAR( 255 ) NOT NULL ,configkey VARCHAR( 255 ) NOT NULL ,configvalue VARCHAR( 255 ) NOT NULL); GRANT ALL ON appconfig TO ${config.dbUser}; ALTER TABLE appconfig OWNER TO ${config.dbUser};"
-      #${pkgs.sudo}/bin/sudo -u postgres ${pkgs.postgresql}/bin/psql -h "/tmp" -U postgres -d "${config.dbName}" -Atw -c "$QUERY" || true
-      
-      ${pkgs.sudo}/bin/sudo -u wwwrun ${php}/bin/php ${config.dataDir}/occ maintenance:install --database "pgsql" --database-name "${config.dbName}"  --database-user "${config.dbUser}" --database-pass "${config.dbPassword}" --admin-user "${config.adminUser}" --admin-pass "${config.adminPassword}"  >> ${config.dataDir}/install.log || true
+      ${pkgs.sudo}/bin/sudo -u wwwrun ${php}/bin/php ${config.package}/occ maintenance:install --database "pgsql" --database-name "${config.dbName}"  --database-user "${config.dbUser}" --database-pass "${config.dbPassword}" --admin-user "${config.adminUser}" --admin-pass "${config.adminPassword}"  >> ${config.dataDir}/install.log || true
 
+      #chown root:root ${config.dataDir}/config/config.php
+      echo "${nextcloudConfig}" > ${config.dataDir}/config/config.php_additions
+      sed 's|);||' ${config.dataDir}/config/config.php > ${config.dataDir}/config/config.php_
+      mv ${config.dataDir}/config/config.php_ ${config.dataDir}/config/config.php
+      cat ${config.dataDir}/config/config.php_additions >> ${config.dataDir}/config/config.php
 
 # maintenance:install [--database DATABASE] [--database-name DATABASE-NAME] [--database-host DATABASE-HOST] [--database-port DATABASE-PORT] [--database-user DATABASE-USER] [--database-pass [DATABASE-PASS]] [--database-table-prefix [DATABASE-TABLE-PREFIX]] [--admin-user ADMIN-USER] [--admin-pass ADMIN-PASS] [--data-dir DATA-DIR]
     fi
-      #${pkgs.sudo}/bin/sudo -u wwwrun ${php}/bin/php ${config.dataDir}/occ upgrade >> ${config.dataDir}/upgrade.log || true
-
+    #${pkgs.sudo}/bin/sudo -u wwwrun ${php}/bin/php ${config.dataDir}/occ upgrade >> ${config.dataDir}/upgrade.log || true
 
     ${pkgs.sudo}/bin/sudo -u wwwrun touch ${config.dataDir}/nextcloud.log
     chown wwwrun:wwwrun ${config.dataDir}/nextcloud.log || true
-
-    #QUERY="INSERT INTO groups (gid) values('admin'); INSERT INTO users (uid,password) values('${config.adminUser}','${builtins.hashString "sha1" config.adminPassword}'); INSERT INTO group_user (gid,uid) values('admin','${config.adminUser}');"
-    #${pkgs.sudo}/bin/sudo -u postgres ${pkgs.postgresql}/bin/psql -h "/tmp" -U postgres -d ${config.dbName} -Atw -c "$QUERY" || true
   '';
 }
 
