@@ -11894,7 +11894,7 @@ in modules // {
 
     # ImportError: No module named tests
     doCheck = false;
-    propagatedBuildInputs = with self; [ requests ];
+    propagatedBuildInputs = with self; [ requests2 dateutil pytz ];
 
     meta = {
       description = "Python client for InfluxDB";
