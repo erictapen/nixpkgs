@@ -1744,6 +1744,8 @@ in
 
   gdmap = callPackage ../tools/system/gdmap { };
 
+  nextcloud = callPackage ../servers/nextcloud/default.nix {};
+
   genext2fs = callPackage ../tools/filesystems/genext2fs { };
 
   gengetopt = callPackage ../development/tools/misc/gengetopt { };
