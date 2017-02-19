@@ -663,14 +663,14 @@ in modules // {
 
 
   alot = buildPythonPackage rec {
-    rev = "0.3.7";
+    rev = "0.5.1";
     name = "alot-${rev}";
 
     src = pkgs.fetchFromGitHub {
       owner = "pazz";
       repo = "alot";
       inherit rev;
-      sha256 = "0sscmmf42gsrjbisi6wm01alzlnq6wqhpwkm8pc557075jfg19il";
+      sha256 = "0ipkhc5wllfq78lg47aiq4qih0yjq8ad9xkrbgc88xk8pk9166i8";
     };
 
     postPatch = ''
@@ -687,6 +687,7 @@ in modules // {
         self.python_magic
         self.configobj
         self.pygpgme
+        self.mock
       ];
 
     postInstall = ''
