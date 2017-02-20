@@ -2004,6 +2004,8 @@ in
 
   halibut = callPackage ../tools/typesetting/halibut { };
 
+  hardinfo = callPackage ../tools/system/hardinfo { };
+
   hdapsd = callPackage ../os-specific/linux/hdapsd { };
 
   hddtemp = callPackage ../tools/misc/hddtemp { };
@@ -7709,7 +7711,7 @@ in
 
   hwloc = callPackage ../development/libraries/hwloc {};
 
-  hydra = callPackage ../development/tools/misc/hydra {};
+  hydra = callPackage ../development/tools/misc/hydra { stdenv = overrideCC stdenv gcc6; };
 
   hydraAntLogger = callPackage ../development/libraries/java/hydra-ant-logger { };
 

@@ -450,14 +450,14 @@ in modules // {
   };
 
   afew = buildPythonPackage rec {
-    rev = "3f1e5e93119788984c2193292c988ac81ecb0a45";
-    name = "afew-git-2016-01-04";
+    name = "afew-git-2017-02-08";
 
-    src = pkgs.fetchurl {
-      url = "https://github.com/teythoon/afew/tarball/${rev}";
-      name = "${name}.tar.bz";
-      sha256 = "1fi19g2j1qilh7ikp7pzn6sagkn76g740zdxgnsqmmvl2zk2yhrw";
-    };
+    src = pkgs.fetchFromGitHub {
+      owner = "afewmail";
+      repo = "afew";
+      rev = "889a3b966835c4d16aa1f24bb89f12945b9b2a67";
+      sha256 = "01gwrx1m3ka13ps3vj04a3y8llli2j2vkd3gcggcvxdphhpysckm";
+     };
 
     buildInputs = with self; [ pkgs.dbacl ];
 
@@ -663,14 +663,14 @@ in modules // {
 
 
   alot = buildPythonPackage rec {
-    rev = "0.3.7";
+    rev = "0.5.1";
     name = "alot-${rev}";
 
     src = pkgs.fetchFromGitHub {
       owner = "pazz";
       repo = "alot";
       inherit rev;
-      sha256 = "0sscmmf42gsrjbisi6wm01alzlnq6wqhpwkm8pc557075jfg19il";
+      sha256 = "0ipkhc5wllfq78lg47aiq4qih0yjq8ad9xkrbgc88xk8pk9166i8";
     };
 
     postPatch = ''
@@ -687,6 +687,7 @@ in modules // {
         self.python_magic
         self.configobj
         self.pygpgme
+        self.mock
       ];
 
     postInstall = ''
