@@ -274,6 +274,7 @@
       terraria = 253;
       mattermost = 254;
       hound = 259;
+      ipfs = 261;
       kresd = 270;
 
       # When adding a uid, make sure it doesn't match an existing gid. And don't use uids above 399!
@@ -519,6 +520,7 @@
       terraria = 253;
       mattermost = 254;
       hound = 259;
+      ipfs = 261;
       kresd = 270;
 
       # When adding a gid, make sure it doesn't match an existing
