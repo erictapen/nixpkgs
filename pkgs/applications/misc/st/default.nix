@@ -4,11 +4,11 @@
 with stdenv.lib;
 
 stdenv.mkDerivation rec {
-  name = "st-0.6";
+  name = "st-0.7";
   
   src = fetchurl {
     url = "http://dl.suckless.org/st/${name}.tar.gz";
-    sha256 = "0avsfc1qp8zvshsfjwwrkvk411jlqy58z225bsdhjkl1qc40qcc5";
+    sha256 = "00309qiw20rc89696pk8bdr7ik4r1aarik7jxqk8k66cdj80v1zp";
   };
 
   inherit patches;
