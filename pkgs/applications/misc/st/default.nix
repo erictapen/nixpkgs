@@ -17,6 +17,7 @@ stdenv.mkDerivation rec {
       url = "http://st.suckless.org/patches/st-scrollback-0.7.diff";
       sha256 = "1dng2hfda3hlrfiw0sq00k57yppmqlqk2wa4dd5pmmx8b9db28gp";
     })
+    ./st-config.diff
   ];
 
   configFile = optionalString (conf!=null) (writeText "config.def.h" conf);
