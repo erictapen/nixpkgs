@@ -3,11 +3,11 @@
 
 rec {
   rustc = stdenv.lib.overrideDerivation (callPackage ./rustc.nix {
-    shortVersion = "beta-2017-01-07";
+    shortVersion = "nightly-2017-01-10";
     forceBundledLLVM = true; # TODO: figure out why linking fails without this
-    configureFlags = [ "--release-channel=beta" ];
-    srcRev = "a035041ba450ce3061d78a2bdb9c446eb5321d0d";
-    srcSha = "12xsm0yp1y39fvf9j218gxv73j8hhahc53jyv3q58kiriyqvfc1s";
+    configureFlags = [ "--release-channel=nightly" ];
+    srcRev = "7bffede97cf58f7159e261eac592f9cf88ce209d";
+    srcSha = "1784jvsf9g03cglwask1zhjmba4ghycbin3rw0hmhb41cz2y4q8v";
     patches = [
      ./patches/disable-lockfile-check-nightly.patch
     ] ++ stdenv.lib.optional stdenv.needsPax ./patches/grsec.patch;
@@ -47,7 +47,7 @@ rec {
   });
 
   cargo = callPackage ./cargo.nix rec {
-    version = "beta-2017-01-10";
+    version = "nightly-2017-01-10";
     srcRev = "6dd4ff0f5b59fff524762c4a7b65882adda713c0";
     srcSha = "1x6d42qq2zhr1iaw0m0nslhv6c1w6x6schmd96max0p9xb47l9zj";
     depsSha256 = "1sywnhzgambmqsjs2xlnzracfv7vjljha55hgf8wca2marafr5dp";
