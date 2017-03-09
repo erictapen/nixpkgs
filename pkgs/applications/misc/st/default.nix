@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, pkgconfig, writeText, libX11, ncurses, libXext, libXft
+{ stdenv, fetchurl, fetchpatch, pkgconfig, writeText, libX11, ncurses, libXext, libXft
 , fontconfig, conf ? null, patches ? []}:
 
 with stdenv.lib;
@@ -12,7 +12,16 @@ in stdenv.mkDerivation rec {
     sha256 = "f7870d906ccc988926eef2cc98950a99cc78725b685e934c422c03c1234e6000";
   };
 
-  patches = patches' ++ [ ./st-fix-deletekey.patch ];
+  # patches = patches' ++ [ ./st-fix-deletekey.patch ];
+  patches = [
+    (fetchpatch {
+      url = "http://st.suckless.org/patches/st-scrollback-0.7.diff";
+      sha256 = "1dng2hfda3hlrfiw0sq00k57yppmqlqk2wa4dd5pmmx8b9db28gp";
+    })
+    ./st-config.diff
+    ./st-fix-deletekey.patch 
+  ];
+
 
   configFile = optionalString (conf!=null) (writeText "config.def.h" conf);
   preBuild = optionalString (conf!=null) "cp ${configFile} config.def.h";
