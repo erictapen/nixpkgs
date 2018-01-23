@@ -66,6 +66,8 @@ stdenv.mkDerivation ({
          "/bin:/usr/bin", which is inappropriate on NixOS machines. This
          patch extends the search path by "/run/current-system/sw/bin". */
       ./fix_path_attribute_in_getconf.patch
+
+      ./fix-rustc-stack-test-34189.patch
     ]
     ++ lib.optional stdenv.isx86_64 ./fix-x64-abi.patch;
 
