@@ -23,7 +23,7 @@
 , icu
 , ruby_2_4
 , bundler
-, rake
+#, rake
 , bundlerEnv
 , which
 }:
@@ -42,40 +42,9 @@ let
       cld3 = attrs: { buildInputs = [ protobuf protobufc pkgconfig ]; };
     };
 
-    nativeBuildInputs = [
-      protobufc
-    ];
-
-    buildInputs = [
-      imagemagick
-      ffmpeg
-      protobufc
-      protobuf
-      postgresql
-      nodejs
-      yarn
-      libpqxx
-      libxml2
-      libxslt
-      file
-      git
-      pkgconfig
-      autoconf
-      bison
-      readline62
-      zlib
-      ncurses5
-      libffi
-      gdbm
-      libidn
-      icu
-      ruby_2_4
-      bundler
-      rake
-      yarn
-    ];
-
     gemdir = ./.;
+
+    ignoreCollisions = true;
   };
 in
 stdenv.mkDerivation {
@@ -107,7 +76,7 @@ stdenv.mkDerivation {
     icu
     ruby_2_4
     bundler
-    rake
+    #rake
     yarn
 
     rubyEnv
