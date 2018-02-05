@@ -23828,4 +23828,7 @@ in
     stdenv = crossLibcStdenv;
   };
 
+  safeDiscardStringContext = callPackage ../build-support/safe-discard-string-context.nix { };
+
+  mastodon = callPackage ../servers/mastodon {};
 }
