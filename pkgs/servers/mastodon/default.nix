@@ -26,6 +26,7 @@
 , which
 , fetchFromGitHub
 , pkgs
+, buildEnv
 }:
 
 
@@ -41,6 +42,7 @@ let
       pg = attrs: { buildInputs = [ postgresql ]; };
       cld3 = attrs: { buildInputs = [ protobuf pkgconfig ]; };
     };
+    buildInputs = [ bundler ];
 
     gemdir = ./.;
 
@@ -69,38 +71,42 @@ stdenv.mkDerivation rec{
     sha256 = "0kfkcn29yk7x21101xcv0qppxxsn4k7m1p36c7jxmhmv407lhnbx";
   };
 
-  buildInputs = [
-    imagemagick
-    ffmpeg
-    protobuf
-    postgresql
-    nodejs
-    yarn
-    libpqxx
-    libxml2
-    libxslt
-    file
-    git
-    pkgconfig
-    autoconf
-    bison
-    readline62
-    zlib
-    ncurses5
-    libffi
-    gdbm
-    libidn
-    icu
-    ruby_2_4
-    bundler
-    yarn
+  env = buildEnv {
+    name = "mastodon-env";
+    paths = [
+      imagemagick
+      ffmpeg
+      protobuf
+      postgresql
+      nodejs
+      yarn
+      libpqxx
+      libxml2
+      libxslt
+      file
+      git
+      pkgconfig
+      autoconf
+      bison
+      readline62
+      zlib
+      ncurses5
+      libffi
+      gdbm
+      libidn
+      icu
+      ruby_2_4
+      # bundler
+      yarn
 
-    rubyEnv
-    nodeEnv.shell
-  ];
+      rubyEnv
+      nodeEnv.shell
+    ];
+  };
 
   installPhase = ''
     mkdir -p $out
+    # rm -r bin
     cp -R . $out/
   '';
 
