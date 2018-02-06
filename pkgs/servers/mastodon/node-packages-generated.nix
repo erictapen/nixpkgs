@@ -8263,6 +8263,7 @@ let
     name = "mastodon";
     packageName = "mastodon";
     src = ./.;
+    version = "2.1.2";
     dependencies = [
       (sources."array-includes-3.0.3" // {
         dependencies = [
