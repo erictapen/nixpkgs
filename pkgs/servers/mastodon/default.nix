@@ -2,7 +2,6 @@
 , imagemagick
 , ffmpeg
 , protobuf
-, protobufc
 , postgresql
 , nodejs
 , yarn
@@ -23,7 +22,6 @@
 , icu
 , ruby_2_4
 , bundler
-#, rake
 , bundlerEnv
 , which
 }:
@@ -39,7 +37,7 @@ let
       "charlock_holmes" = attrs: { buildInputs = [ which icu zlib ]; };
       nokogiri = attrs: { buildInputs = [ zlib ]; };
       pg = attrs: { buildInputs = [ postgresql ]; };
-      cld3 = attrs: { buildInputs = [ protobuf protobufc pkgconfig ]; };
+      cld3 = attrs: { buildInputs = [ protobuf pkgconfig ]; };
     };
 
     gemdir = ./.;
