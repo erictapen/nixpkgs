@@ -99,4 +99,9 @@ stdenv.mkDerivation rec{
     nodeEnv.shell
   ];
 
+  installPhase = ''
+    mkdir -p $out
+    cp -R . $out/
+  '';
+
 }
