@@ -24,6 +24,8 @@
 , bundler
 , bundlerEnv
 , which
+, fetchFromGitHub
+, pkgs
 }:
 
 
@@ -44,9 +46,28 @@ let
 
     ignoreCollisions = true;
   };
+  # node-packages*.nix generated via:
+  #
+  # % node2nix --input package.json \
+  #            --output node-packages-generated.nix \
+  #            --composition node-packages.nix \
+  #            --node-env ./../../development/node-packages/node-env.nix \
+  #            --pkg-name nodejs-6_x
+  nodeEnv = import ./node-packages.nix {
+    inherit pkgs;
+    inherit (stdenv) system;
+  };
 in
-stdenv.mkDerivation {
+stdenv.mkDerivation rec{
   name = "mastodon";
+  version = "2.1.2";
+
+  src = fetchFromGitHub {
+    owner = "tootsuite";
+    repo = "mastodon";
+    rev = "v${version}";
+    sha256 = "0kfkcn29yk7x21101xcv0qppxxsn4k7m1p36c7jxmhmv407lhnbx";
+  };
 
   buildInputs = [
     imagemagick
@@ -78,5 +99,7 @@ stdenv.mkDerivation {
     yarn
 
     rubyEnv
+    nodeEnv.shell
   ];
+
 }
