@@ -104,6 +104,10 @@ stdenv.mkDerivation rec{
     ];
   };
 
+  passthru = {
+    inherit rubyEnv;
+  };
+
   installPhase = ''
     mkdir -p $out
     # rm -r bin
