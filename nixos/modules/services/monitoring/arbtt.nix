@@ -50,6 +50,7 @@ in {
       description = "arbtt statistics capture service";
       wantedBy = [ "graphical-session.target" ];
       partOf = [ "graphical-session.target" ];
+      environment.DISPLAY = ":0";
 
       serviceConfig = {
         Type = "simple";
