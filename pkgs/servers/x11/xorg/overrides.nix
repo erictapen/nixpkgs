@@ -471,7 +471,13 @@ self: super:
             meta.platforms = stdenv.lib.platforms.unix;
         } else throw "unsupported xorg abiCompat ${abiCompat} for ${attrs_passed.name}";
 
-    in attrs //
+    in attrs // {
+      patches = [(fetchpatch {
+        name = "CVE-2018-14665.patch";
+        url = "https://gitlab.freedesktop.org/xorg/xserver/commit/032b1d79b7d04d47814a5b3a9fdd162249fea74c.patch";
+        sha256 = "0nr3zsragah8hjb34jhvmdacggwkqkirln5k6x7qjlk4zj0hzf20";
+      })];
+    } //
     (let
       version = (builtins.parseDrvName attrs.name).version;
       commonBuildInputs = attrs.buildInputs ++ [ xtrans ];
