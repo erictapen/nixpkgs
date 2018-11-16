@@ -25,7 +25,14 @@
 , bundlerEnv
 , which
 , fetchFromGitHub
-, pkgs
+, fetchurl
+, fetchgit
+, runCommand
+, writeTextFile
+, libtool
+, utillinux
+, python2
+, nodejs-6_x
 , buildEnv
 }:
 
@@ -56,9 +63,12 @@ let
   #            --composition node-packages.nix \
   #            --node-env ./../../development/node-packages/node-env.nix \
   #            --pkg-name nodejs-6_x
-  nodeEnv = import ./node-packages.nix {
-    inherit pkgs;
-    inherit (stdenv) system;
+  nodeEnv = import ./node-packages-generated.nix {
+    inherit fetchurl fetchgit;
+    nodeEnv = import ../../development/node-packages/node-env.nix {
+      inherit stdenv python2 utillinux runCommand writeTextFile libtool;
+      nodejs = nodejs-6_x;
+    };
   };
 in
 stdenv.mkDerivation rec{
