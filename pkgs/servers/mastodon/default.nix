@@ -41,6 +41,7 @@ let
       nokogiri = attrs: { buildInputs = [ zlib ]; };
       pg = attrs: { buildInputs = [ postgresql ]; };
       cld3 = attrs: { buildInputs = [ protobuf pkgconfig ]; };
+      ffi = attrs: { buildInputs = [ libffi pkgconfig ]; };
     };
     buildInputs = [ bundler ];
 
@@ -95,7 +96,7 @@ stdenv.mkDerivation rec{
       gdbm
       libidn
       icu
-      ruby_2_4
+      # ruby_2_4
       # bundler
       yarn
 
