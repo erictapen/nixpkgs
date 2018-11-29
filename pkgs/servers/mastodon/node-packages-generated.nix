@@ -2475,7 +2475,7 @@ let
       packageName = "emoji-mart";
       version = "2.1.4";
       src = fetchgit {
-        url = "git://github.com/Gargron/emoji-mart";
+        url = "https://github.com/Gargron/emoji-mart";
         rev = "a5e1afe5ebcf2841e611d20d261b029581cbe051";
         sha256 = "e93216a70d1fd08328697fb0f31b72ea7f2445f0022efc5a54d80f436b694b6b";
       };
