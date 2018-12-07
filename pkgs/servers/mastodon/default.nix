@@ -90,12 +90,13 @@ let
   #            --output node-packages-generated.nix \
   #            --composition node-packages.nix \
   #            --node-env ./../../development/node-packages/node-env.nix \
-  #            --pkg-name nodejs-6_x
+  #            --pkg-name nodejs-8_x
   nodeEnv = import ./node-packages-generated.nix {
     inherit fetchurl fetchgit;
     nodeEnv = import ../../development/node-packages/node-env.nix {
-      inherit stdenv python2 utillinux runCommand writeTextFile libtool;
+      inherit stdenv python2 utillinux runCommand writeTextFile;
       nodejs = nodejs-8_x;
+      libtool = if pkgs.stdenv.isDarwin then pkgs.darwin.cctools else null;
     };
   };
 in
@@ -132,7 +133,7 @@ stdenv.mkDerivation rec{
       yarn
 
       rubyEnv
-      # nodeEnv.shell
+      nodeEnv.package
     ];
   };
 
