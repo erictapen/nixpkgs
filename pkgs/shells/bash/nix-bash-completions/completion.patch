@@ -1,0 +1,13 @@
+diff --git a/_nix b/_nix
+index ecd60b1..01f2f94 100644
+--- a/_nix
++++ b/_nix
+@@ -404,7 +404,7 @@ function _nix_completion () {
+     local nix_dry_run='--dry-run'
+ 
+     local -a nix_gc_common=(
+-        '(- --print* --delete)--print-roots'
++            '(-|--print*|--delete)--print-roots'
+             '(-|--print*|--delete)--print-live'
+             '(-|--print*|--delete)--print-dead'
+             '(-|--print*|--delete)--delete'
