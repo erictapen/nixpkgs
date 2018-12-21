@@ -12554,6 +12554,10 @@ julia_15 = callPackage ../development/compilers/julia/1.5.nix {
 
   editline = callPackage ../development/libraries/editline { };
 
+  eglexternalplatform = callPackage ../development/libraries/eglexternalplatform { };
+
+  egl-wayland = callPackage ../development/libraries/egl-wayland { };
+
   eigen = callPackage ../development/libraries/eigen {};
 
   eigen2 = callPackage ../development/libraries/eigen/2.0.nix {};
@@ -22357,6 +22361,10 @@ julia_15 = callPackage ../development/compilers/julia/1.5.nix {
   mimms = callPackage ../applications/audio/mimms {};
 
   meh = callPackage ../applications/graphics/meh {};
+
+  mir = callPackage ../applications/display-managers/mir {};
+
+  mirage = callPackage ../applications/graphics/mirage { };
 
   mixxx = libsForQt5.callPackage ../applications/audio/mixxx { };
 
