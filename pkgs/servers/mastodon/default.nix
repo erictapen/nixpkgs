@@ -92,11 +92,11 @@ let
   #            --node-env ./../../development/node-packages/node-env.nix \
   #            --pkg-name nodejs-8_x
   nodeEnv = import ./node-packages-generated.nix {
-    inherit fetchurl fetchgit;
+    inherit fetchurl fetchgit fetchFromGitHub;
     nodeEnv = import ../../development/node-packages/node-env.nix {
       inherit stdenv python2 utillinux runCommand writeTextFile;
       nodejs = nodejs-8_x;
-      libtool = if pkgs.stdenv.isDarwin then pkgs.darwin.cctools else null;
+      libtool = null;
     };
   };
 in

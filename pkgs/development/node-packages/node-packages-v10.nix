@@ -53388,9 +53388,10 @@ in
     name = "node2nix";
     packageName = "node2nix";
     version = "1.6.0";
-    src = fetchurl {
-      url = "https://registry.npmjs.org/node2nix/-/node2nix-1.6.0.tgz";
-      sha512 = "MJY6SsQH3pN59R9N3nMz/L8BsbQ0DlvSF38mgg1fwfwgnaJ+y600s3Nd0vZ+cnETUH+4OPETc4QohflccjPUYw==";
+    src = fetchgit {
+      url = "git://github.com/svanderburg/node2nix";
+      rev = "bae313f8fd50de4c7af8a75963c085731de5cd9f";
+      sha256 = "0w5cxrdcblilrzsdq3sj0xsqqkrkwv03v15r18lpf6rlkq9ifwp8";
     };
     dependencies = [
       sources."abbrev-1.1.1"
