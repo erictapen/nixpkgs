@@ -1769,7 +1769,7 @@
     source = {
       fetchSubmodules = false;
       rev = "58465d2e213991f8afb13b984854a49fcdcc980c";
-      sha256 = "1mq284bps0y4yfwkhvj2j27g6lpzfhzw1bypim1a0n1js7j54vhk";
+      sha256 = "07crzff7w5kqg1ah1px4gs924hm1mm0mh0jcm4jgiilfg7ij008f";
       type = "git";
       url = "https://github.com/rtomayko/posix-spawn";
     };
