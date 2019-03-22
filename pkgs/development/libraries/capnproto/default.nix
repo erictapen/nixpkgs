@@ -1,5 +1,7 @@
-{ stdenv, fetchurl }:
-
+{ stdenv, fetchurl, autoconf, automake, libtool, buildPackages }:
+let
+  isCross = stdenv.hostPlatform != stdenv.buildPlatform;
+in
 stdenv.mkDerivation rec {
   pname = "capnproto";
   version = "0.8.0";
@@ -8,6 +10,10 @@ stdenv.mkDerivation rec {
     url = "https://capnproto.org/capnproto-c++-${version}.tar.gz";
     sha256 = "03f1862ljdshg7d0rg3j7jzgm3ip55kzd2y91q7p0racax3hxx6i";
   };
+
+  nativeBuildInputs = stdenv.lib.optional isCross [ buildPackages.capnproto ];
+
+  configureFlags = stdenv.lib.optional isCross [ "--with-external-capnp" ];
 
   meta = with stdenv.lib; {
     homepage    = "http://kentonv.github.io/capnproto";
