@@ -2,6 +2,8 @@
 
 stdenv.mkDerivation rec{
   name = "eglexternalplatform";
+  version = "2018-08-16";
+
   src = fetchFromGitHub {
     owner = "NVIDIA";
     repo = "eglexternalplatform";
