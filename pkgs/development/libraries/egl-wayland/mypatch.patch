@@ -1,0 +1,21 @@
+diff --git a/meson.build b/meson.build
+index df28d95..5eeccd8 100644
+--- a/meson.build
++++ b/meson.build
+@@ -25,7 +25,8 @@ wayland_egl_backend = dependency('wayland-egl-backend', version : ['>=3'])
+ threads = dependency('threads')
+ 
+ wl_scanner = dependency('wayland-scanner', native: true)
+-prog_scanner = find_program(wl_scanner.get_pkgconfig_variable('wayland_scanner'))
++# prog_scanner = find_program(wl_scanner.get_pkgconfig_variable('wayland_scanner'))
++prog_scanner = get_option('wayland-scanner')
+ 
+ inc = include_directories(
+     'include',
+diff --git a/meson_options.txt b/meson_options.txt
+new file mode 100644
+index 0000000..fa9b0a8
+--- /dev/null
++++ b/meson_options.txt
+@@ -0,0 +1 @@
++option('wayland-scanner', type : 'string', description : 'mylol')

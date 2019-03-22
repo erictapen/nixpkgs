@@ -8,6 +8,8 @@
 , mesa
 , libGL
 , wayland
+, x11
+, buildPackages
 }:
 
 let
@@ -68,6 +70,28 @@ in stdenv.mkDerivation rec {
     libGL
     wayland
   ];
+
+  # configureFlags = [ "WAYLAND_SCANNER=${buildPackages.wayland}/bins/wayland-scanner" ];
+  # mesonFlags = [
+  #   "-Dprog_scanner=${buildPackages.wayland}/bin/wayland-scanner"
+  #   "-Dwl_scanner=${buildPackages.wayland}/bin/wayland-scanner"
+  #   "-Dwayland-scanner=${buildPackages.wayland}/bin/wayland-scanner"
+  # ];
+
+  # postInstall = let
+  #   nw-json = builtins.toFile "10_nvidia_wayland.json" ''
+  #     {
+  #         "file_format_version" : "1.0.0",
+  #         "ICD" : {
+  #             "library_path" : "libnvidia-egl-wayland.so.1"
+  #         }
+  #     }
+  #   '';
+  # in  ''
+  #   mkdir -p $out/share/egl/egl_external_platform.d
+  #   ln -s ${nw-json} $out/share/egl/egl_external_platform.d/10_nvidia_wayland.json
+  # '';
+}
 
   meta = with lib; {
     description = "The EGLStream-based Wayland external platform";
