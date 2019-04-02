@@ -8036,6 +8036,7 @@ let
   };
   args = {
     name = "mastodon";
+    version = "2.7.4";
     packageName = "mastodon";
     src = ./.;
     dependencies = [
