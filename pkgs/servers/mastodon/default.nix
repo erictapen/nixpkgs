@@ -39,12 +39,12 @@
 
 
 let
-  version = "2.6.2";
+  version = "2.7.4";
   src = fetchFromGitHub {
     owner = "tootsuite";
     repo = "mastodon";
     rev = "v${version}";
-    sha256 = "0yj1lb091l9fp5myipjd9614g2yg0xvqhcphlbbgmh7lnywnswah";
+    sha256 = "0x16c2m8d9nszr9hjw6j1i8gicvpgxzli5afaqd0z144y0ar62qa";
   };
   rubyEnv = bundlerEnv {
     name = "mastodon-env";
@@ -92,7 +92,7 @@ let
   #            --node-env ./../../development/node-packages/node-env.nix \
   #            --pkg-name nodejs-8_x
   nodeEnv = import ./node-packages-generated.nix {
-    inherit fetchurl fetchgit fetchFromGitHub;
+    inherit fetchurl fetchgit;
     nodeEnv = import ../../development/node-packages/node-env.nix {
       inherit stdenv python2 utillinux runCommand writeTextFile;
       nodejs = nodejs-8_x;
