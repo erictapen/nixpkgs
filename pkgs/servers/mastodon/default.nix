@@ -21,7 +21,7 @@
 , libidn
 , icu
 , pam
-, ruby_2_5
+, ruby_2_6
 , bundler
 , bundlerEnv
 , which
@@ -48,7 +48,7 @@ let
   };
   rubyEnv = bundlerEnv {
     name = "mastodon-env";
-    inherit ruby_2_5;
+    inherit ruby_2_6;
 
     gemConfig = {
       "idn-ruby" = attrs: { buildInputs = [ libidn ]; };
