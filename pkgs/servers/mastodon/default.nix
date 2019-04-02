@@ -59,11 +59,18 @@ let
       ffi = attrs: { buildInputs = [ libffi pkgconfig ]; };
       # fetch git submodules, include a patch from upstream, where submodules
       # are linked by https:// instead of git://
-      "http_parser.rb"= attrs: { 
+      "http_parser.rb"= attrs: {
         source = attrs.source // { 
           fetchSubmodules = true;
           rev = "b89eababc1f103c5f1e54a72ed83fc2f89adb6a5";
-          sha256 = "1mm30sd1k218fxlfziax2kyaqgib83j6lsxmn12qfb1hjybp5rml";
+          sha256 = "00avimm11xnpsylgvr1rrcxr9ijsa3rygvqj8fzil0g73cypb7fx";
+        }; 
+      };
+      "posix-spawn"= attrs: {
+        source = attrs.source // { 
+          fetchSubmodules = true;
+          rev = "05d33e8c922cfcb6ab259b30cc6c1f266765ec77";
+          sha256 = "0ys0k2nbqvwyv3l25lvmc24y9wq617ra5m7775mx95g4385zdlmi";
         }; 
       };
       rpam2 = attrs: { buildInputs = [ pam ]; };
