@@ -87,7 +87,8 @@ let
   };
   # node-packages*.nix generated via:
   #
-  # % node2nix --input package.json \
+  # % node2nix --nodejs-8 \
+  #            --input package.json \
   #            --output node-packages-generated.nix \
   #            --composition node-packages.nix \
   #            --node-env ./../../development/node-packages/node-env.nix \
