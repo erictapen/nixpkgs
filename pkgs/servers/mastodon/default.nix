@@ -69,7 +69,8 @@ let
       rpam2 = attrs: { buildInputs = [ pam ]; };
     };
 
-    buildInputs = [ bundler ];
+    # ?
+    # buildInputs = [ bundler ];
 
     gemfile = "${src}/Gemfile";
     lockfile = "${src}/Gemfile.lock";
