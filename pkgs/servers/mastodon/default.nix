@@ -132,7 +132,6 @@ stdenv.mkDerivation rec{
       icu
       # ruby_2_4
       # bundler
-      yarn
 
       rubyEnv
       nodeEnv.package
