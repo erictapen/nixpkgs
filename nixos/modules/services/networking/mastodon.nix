@@ -5,6 +5,8 @@ with lib;
 let
   cfg = config.services.mastodon;
 
+  # this could be generated with
+  # RAILS_ENV=production bundle exec rake mastodon:setup
   "env-production" = builtins.toFile "env.production" ''
     # Service dependencies
     # You may set REDIS_URL instead for more advanced options
@@ -21,7 +23,7 @@ let
     # Federation
     # Note: Changing LOCAL_DOMAIN at a later time will cause unwanted side effects, including breaking all existing federation.
     # LOCAL_DOMAIN should *NOT* contain the protocol part of the domain e.g https://example.com.
-    LOCAL_DOMAIN=social.erictapen.de
+    LOCAL_DOMAIN=social.erictapen.name
 
     # Application secrets
     # Generate each with the `RAILS_ENV=production bundle exec rake secret` task (`docker-compose run --rm web rake secret` if you use docker compose)
