@@ -31,6 +31,7 @@
 , umockdev
 , liburcu
 , lttng-ust
+, wlcs
 }:
 stdenv.mkDerivation {
   name = "mir";
@@ -53,6 +54,7 @@ stdenv.mkDerivation {
       # 'gmock'...
       (gtest.overrideAttrs (oldAttrs: { name = "gmock-${oldAttrs.version}"; }))
       valgrind
+      wlcs
     ];
 
   buildInputs = [

@@ -8280,6 +8280,8 @@ in
 
   wkhtmltopdf = libsForQt514.callPackage ../tools/graphics/wkhtmltopdf { };
 
+  wlcs = callPackage ../development/libraries/wlcs { };
+
   wml = callPackage ../development/web/wml { };
 
   wmc-mpris = callPackage ../applications/misc/web-media-controller { };
