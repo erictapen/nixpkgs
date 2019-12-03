@@ -32,6 +32,7 @@
 , liburcu
 , lttng-ust
 , wlcs
+, libsystemtap
 }:
 stdenv.mkDerivation {
   name = "mir";
@@ -39,8 +40,8 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "MirServer";
     repo = "mir";
-    rev = "v1.4.0";
-    sha256 = "d/gdjx2KTjBYJ/08OvsUrDNCJk8p7IoR4rEWYUPX7UQ=";
+    rev = "v1.6.0";
+    sha256 = "sha256:053flad13sn8c4gq7q5r9w9xp1iz1p2sij213nlh7d79ag2jn1jn";
     fetchSubmodules = true;
   };
 
@@ -90,6 +91,7 @@ stdenv.mkDerivation {
       umockdev
       liburcu
       lttng-ust
+      libsystemtap
     ];
 }
 

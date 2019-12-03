@@ -91,7 +91,6 @@ in stdenv.mkDerivation rec {
   #   mkdir -p $out/share/egl/egl_external_platform.d
   #   ln -s ${nw-json} $out/share/egl/egl_external_platform.d/10_nvidia_wayland.json
   # '';
-}
 
   meta = with lib; {
     description = "The EGLStream-based Wayland external platform";
