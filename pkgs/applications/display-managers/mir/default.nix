@@ -40,8 +40,8 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "MirServer";
     repo = "mir";
-    rev = "v1.6.0";
-    sha256 = "sha256:053flad13sn8c4gq7q5r9w9xp1iz1p2sij213nlh7d79ag2jn1jn";
+    rev = "v1.7.0";
+    sha256 = "sha256:1lp6lpqy6ncjjksia3rbyk66qnpw9gd0di40ajkwckjdjn2357qh";
     fetchSubmodules = true;
   };
 
