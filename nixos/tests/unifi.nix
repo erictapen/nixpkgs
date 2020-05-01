@@ -1,4 +1,4 @@
-import ./make-test.nix ({ pkgs, ... }:
+import ./make-test-python.nix ({ pkgs, ... }:
 
 let
   httpPort = 8080;
@@ -13,7 +13,6 @@ in rec {
 
   nodes = {
     server = { pkgs, ... }: {
-      boot.kernelPackages = kernel;
       services.unifi = {
         enable = true;
         openPorts = true;
@@ -29,17 +28,17 @@ in rec {
   };
 
   testScript = ''
-    startAll;
+    start_all()
 
-    $server->waitForOpenPort(${toString httpPort});
+    server.wait_for_open_port(${toString httpPort})
 
-    $server->waitUntilSucceeds("test -d /var/lib/unifi/data");
-    $server->waitUntilSucceeds("test -d /var/lib/unifi/logs");
-    $server->waitUntilSucceeds("test -d /var/lib/unifi/run");
+    server.wait_until_succeeds("test -d /var/lib/unifi/data")
+    server.wait_until_succeeds("test -d /var/lib/unifi/logs")
+    server.wait_until_succeeds("test -d /var/lib/unifi/run")
 
-    $server->waitUntilSucceeds("test -L /var/lib/unifi/webapps/ROOT");
-    $server->waitUntilSucceeds("test -f /var/lib/unifi/data/system.properties");
+    server.wait_until_succeeds("test -L /var/lib/unifi/webapps/ROOT")
+    server.wait_until_succeeds("test -f /var/lib/unifi/data/system.properties")
 
-    $client->waitUntilSucceeds("curl --insecure --silent https://server:${toString httpsPort}");
+    client.wait_until_succeeds("curl --insecure --silent https://server:${toString httpsPort}")
   '';
 })
