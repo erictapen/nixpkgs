@@ -49,6 +49,14 @@ let
 in
 {
 
+  imports = [
+    (
+      mkRemovedOptionModule
+        [ "services" "unifi" "dataDir" ]
+        "To use external storage, configure unifi to use an external Mongo instance and configure that accordingly."
+    )
+  ];
+
   options.services.unifi = {
 
     enable = mkOption {
@@ -195,12 +203,14 @@ in
     # We must create the binary directories as bind mounts instead of symlinks
     # This is because the controller resolves all symlinks to absolute paths
     # to be used as the working directory.
-    systemd.mounts = map ({ what, where }: {
+    systemd.mounts = map (
+      { what, where }: {
         bindsTo = [ "unifi.service" ];
         partOf = [ "unifi.service" ];
         options = "bind";
         inherit what where;
-      }) mountPoints;
+      }
+    ) mountPoints;
 
     systemd.services.unifi-setup = {
       description = "UniFi controller daemon - setup";
@@ -211,20 +221,25 @@ in
         props = "${stateDir}/data/system.properties";
 
         toStr = val: if builtins.isBool val
-          then lib.boolToString val
-          else toString val;
-      in ''
-        set -Euo pipefail
+        then lib.boolToString val
+        else toString val;
+      in
+        ''
+          set -Euo pipefail
 
-        rm -f ${stateDir}/webapps/ROOT
-        ln -s ${cfg.unifiPackage}/webapps/ROOT ${stateDir}/webapps/ROOT
+          rm -f ${stateDir}/webapps/ROOT
+          ln -s ${cfg.unifiPackage}/webapps/ROOT ${stateDir}/webapps/ROOT
 
-        touch ${props}
-        ${lib.concatStringsSep "\n" (lib.mapAttrsToList (name: value: ''
-          ${pkgs.crudini}/bin/crudini --set ${props} \
-            "" ${name} ${toStr value}
-        '') systemProperties)}
-      '';
+          touch ${props}
+          ${lib.concatStringsSep "\n" (
+          lib.mapAttrsToList (
+            name: value: ''
+              ${pkgs.crudini}/bin/crudini --set ${props} \
+                "" ${name} ${toStr value}
+            ''
+          ) systemProperties
+        )}
+        '';
 
       serviceConfig = {
         Type = "oneshot";
@@ -257,9 +272,12 @@ in
 
     systemd.tmpfiles.rules = [
       "d ${stateDir} 0700 unifi unifi - -"
+      "L+ '${stateDir}/webapps/ROOT' - - - - ${cfg.unifiPackage}/webapps/ROOT"
     ]
-    ++ (map (e: "d ${stateDir}/${e} 0700 unifi unifi - -")
-      [ "data" "logs" "run" "webapps" ])
+    ++ (
+      map (e: "d ${stateDir}/${e} 0700 unifi unifi - -")
+        [ "data" "logs" "run" "webapps" ]
+    )
     ++ [ "Z ${stateDir} - unifi unifi - -" ];
   };
 
