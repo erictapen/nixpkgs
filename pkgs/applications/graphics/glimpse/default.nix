@@ -1,7 +1,6 @@
 { stdenv
 , lib
-, fetchpatch
-, fetchurl
+, fetchFromGitHub
 , substituteAll
 , pkgconfig
 , intltool
@@ -29,7 +28,7 @@
 , ghostscript
 , aalib
 , shared-mime-info
-, python2Packages
+, python2
 , libexif
 , gettext
 , xorg
@@ -45,26 +44,53 @@
 , AppKit
 , Cocoa
 , gtk-mac-integration-gtk2
+, libxslt
+, automake
+, autoconf
+, libtool
+, makeWrapper
+, autoreconfHook
+, gtk-doc
 }:
 
 let
-  inherit (python2Packages) pygtk wrapPython python;
+  python = python2.withPackages (pp: [ pp.pygtk ]);
 in stdenv.mkDerivation rec {
   pname = "glimpse";
-  version = "0.1.2";
+  version = "0.2.0";
 
   outputs = [ "out" "dev" ];
 
-  src = fetchurl {
-    url = "https://github.com/glimpse-editor/Glimpse/releases/download/v${version}/glimpse-${version}.tar.xz";
-    sha256 = "03gb1lavgvxfcsczxi53c266zn39pz1v8yspnjlz98yrzxz6n25i";
+  src = fetchFromGitHub {
+    owner = "glimpse-editor";
+    repo = "Glimpse";
+    rev = "v${version}";
+    sha256 = "sha256-qbZQmAo7fuJWWbn0QTyxAwAenZOdsGueUq5/3IV8Njc=";
   };
 
+  patches = [
+    # to remove compiler from the runtime closure, reference was retained via
+    # gimp --version --verbose output
+    (substituteAll {
+      src = ./remove-cc-reference.patch;
+      cc_version = stdenv.cc.cc.name;
+    })
+    ../gimp/hardcode-plugin-interpreters.patch
+  ];
+
+  postPatch = ''
+    ln -s ${gtk-doc}/share/gtk-doc/data/gtk-doc.make .
+  '';
+
   nativeBuildInputs = [
+    autoreconfHook
     pkgconfig
     intltool
     gettext
-    wrapPython
+    automake
+    autoconf
+    makeWrapper
+    gtk-doc
   ];
 
   buildInputs = [
@@ -98,12 +124,13 @@ in stdenv.mkDerivation rec {
     libwebp
     libheif
     python
-    pygtk
     libexif
     xorg.libXpm
     glib-networking
     libmypaint
     mypaint-brushes1
+    libxslt
+    libtool
   ] ++ lib.optionals stdenv.isDarwin [
     AppKit
     Cocoa
@@ -117,35 +144,18 @@ in stdenv.mkDerivation rec {
     gegl
   ];
 
-  pythonPath = [ pygtk ];
-
   # Check if librsvg was built with --disable-pixbuf-loader.
   PKG_CONFIG_GDK_PIXBUF_2_0_GDK_PIXBUF_MODULEDIR = "${librsvg}/${gdk-pixbuf.moduleDir}";
 
   preConfigure = ''
     # The check runs before glib-networking is registered
     export GIO_EXTRA_MODULES="${glib-networking}/lib/gio/modules:$GIO_EXTRA_MODULES"
+
+    ./autogen.sh
   '';
 
-  patches = [
-    # to remove compiler from the runtime closure, reference was retained via
-    # gimp --version --verbose output
-    (substituteAll {
-      src = ./remove-cc-reference.patch;
-      cc_version = stdenv.cc.cc.name;
-    })
-
-    (fetchpatch {
-      name = "segfault_in_gimp_param_spec_layer_id.patch";
-      url = "https://github.com/glimpse-editor/Glimpse/commit/2dcb60016eb52659932fc71ff2e635986c06ebc0.patch";
-      sha256 = "00j17fqvf9iw6wkmb6kk5kb5v6wpsy1pg7r7nlk7prylv4kh08a1";
-    })
-  ];
-
   postFixup = ''
-    wrapPythonProgramsIn $out/lib/glimpse/${passthru.majorVersion}/plug-ins/
     wrapProgram $out/bin/glimpse-${lib.versions.majorMinor version} \
-      --prefix PYTHONPATH : "$PYTHONPATH" \
       --set GDK_PIXBUF_MODULE_FILE "$GDK_PIXBUF_MODULE_FILE"
   '';
 
