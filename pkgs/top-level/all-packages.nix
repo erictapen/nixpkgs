@@ -12558,8 +12558,6 @@ julia_15 = callPackage ../development/compilers/julia/1.5.nix {
 
   eglexternalplatform = callPackage ../development/libraries/eglexternalplatform { };
 
-  egl-wayland = callPackage ../development/libraries/egl-wayland { };
-
   eigen = callPackage ../development/libraries/eigen {};
 
   eigen2 = callPackage ../development/libraries/eigen/2.0.nix {};
@@ -12570,7 +12568,9 @@ julia_15 = callPackage ../development/compilers/julia/1.5.nix {
 
   egl-wayland = callPackage ../development/libraries/egl-wayland {};
 
-  elastix = callPackage ../development/libraries/science/biology/elastix { };
+  elastix = callPackage ../development/libraries/science/biology/elastix {
+    inherit (darwin.apple_sdk.frameworks) Cocoa;
+  };
 
   enchant1 = callPackage ../development/libraries/enchant/1.x.nix { };
 
