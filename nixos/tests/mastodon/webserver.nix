@@ -9,7 +9,7 @@ import ../make-test-python.nix ({ pkgs, ...} : let
 
 in {
   name = "mastodon-webserver";
-  meta = with pkgs.stdenv.lib.maintainers; {
+  meta = with pkgs.lib.maintainers; {
     maintainers = [ happy-river ];
   };
 

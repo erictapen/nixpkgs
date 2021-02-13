@@ -3,7 +3,7 @@
 import ../make-test-python.nix ({ pkgs, ...} :
 {
   name = "mastodon-package-tests";
-  meta = with pkgs.stdenv.lib.maintainers; {
+  meta = with pkgs.lib.maintainers; {
     maintainers = [ happy-river ];
   };
 
