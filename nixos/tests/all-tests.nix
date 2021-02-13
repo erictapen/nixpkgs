@@ -255,6 +255,8 @@ in
   mailhog = handleTest ./mailhog.nix {};
   mariadb-galera-mariabackup = handleTest ./mysql/mariadb-galera-mariabackup.nix {};
   mariadb-galera-rsync = handleTest ./mysql/mariadb-galera-rsync.nix {};
+  mastodon.webserver = handleTest ./mastodon/webserver.nix {};
+  mastodon.package-tests = handleTest ./mastodon/package-tests.nix {};
   matomo = handleTest ./matomo.nix {};
   matrix-appservice-irc = handleTest ./matrix-appservice-irc.nix {};
   matrix-synapse = handleTest ./matrix-synapse.nix {};
