@@ -29,6 +29,14 @@ in {
       };
     };
 
+
+  # What to test:
+  # local db / remote db
+  # local nginx / remote nginx
+  # local redis / remote redis
+  # local smtp / remote smtp
+  #
+  # secret auto generation
   testScript =
     ''
       def mastodon_cmd(cmd):
