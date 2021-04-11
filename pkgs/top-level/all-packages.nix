@@ -6003,6 +6003,10 @@ with pkgs;
 
   moar = callPackage ../tools/misc/moar { };
 
+  mobilizon = callPackage ../servers/mobilizon {
+    inherit (beam.packages.erlang) mixRelease fetchMixDeps;
+  };
+
   molly-brown = callPackage ../servers/gemini/molly-brown { };
 
   monetdb = callPackage ../servers/sql/monetdb { };
