@@ -1,52 +1,59 @@
-import ../make-test-python.nix ({ pkgs, ...} : let
+import ../make-test-python.nix
+  ({ pkgs, ... }:
+    let
+      certs = import ../common/acme/server/snakeoil-certs.nix;
+      mastodonDomain = certs.domain;
+    in
+    {
+      name = "mastodon-webserver";
+      meta.maintainers = with pkgs.lib.maintainers; [ erictapen ];
 
-  basicConfig = { ... }: {
-    services.mastodon = {
-      enable = true;
-      configureNginx = false;
-    };
-  };
+      nodes.mastodon = { lib, ... }:
+        {
+          virtualisation.memorySize = 2048;
 
-in {
-  name = "mastodon-webserver";
-  meta = with pkgs.lib.maintainers; {
-    maintainers = [ happy-river erictapen ];
-  };
+          security.pki.certificateFiles = [ certs.ca.cert ];
 
-  nodes = let
-  in rec {
-    alice =
-      { ... }:
-      {
-        imports = [ basicConfig ];
-        virtualisation.memorySize = 2048;
+          services.nginx.virtualHosts.${mastodonDomain} = {
+            enableACME = lib.mkForce false;
+            sslCertificate = certs.${mastodonDomain}.cert;
+            sslCertificateKey = certs.${mastodonDomain}.key;
+          };
 
-        services.mastodon = {
-          smtp.user = "alice";
-          smtp.fromAddress = "admin@alice.example.org";
-          localDomain = "alice.example.org";
+          services.mastodon = {
+            enable = true;
+            configureNginx = true;
+            localDomain = mastodonDomain;
+            smtp = rec {
+              fromAddress = "mail@${mastodonDomain}";
+              user = fromAddress;
+            };
+          };
         };
-      };
-    };
+
+      nodes.client = { ... }:
+        {
+          security.pki.certificateFiles = [ certs.ca.cert ];
+        };
 
 
-  # What to test:
-  # local db / remote db
-  # local nginx / remote nginx
-  # local redis / remote redis
-  # local smtp / remote smtp
-  #
-  # secret auto generation
-  testScript =
-    ''
-      def mastodon_cmd(cmd):
-          return f'su - mastodon -s /bin/sh -c "mastodon-env {cmd}" | cat'
+      # What to test:
+      # local db / remote db
+      # local nginx / remote nginx
+      # local redis / remote redis
+      # local smtp / remote smtp
+      #
+      # secret auto generation
+      testScript =
+        ''
+          def mastodon_cmd(cmd):
+              return f'su - mastodon -s /bin/sh -c "mastodon-env {cmd}" | cat'
 
 
-      start_all()
-      alice.wait_for_unit("multi-user.target")
-      # alice.log(alice.succeed(mastodon_cmd("tootctl settings registrations open")))
-      # alice.wait_for_open_port(55001)
-      # alice.succeed("curl http://localhost:55001/")
-    '';
-})
+          start_all()
+          mastodon.wait_for_unit("multi-user.target")
+          # mastodon.log(mastodon.succeed(mastodon_cmd("tootctl settings registrations open")))
+          # mastodon.wait_for_open_port(55001)
+          # mastodon.succeed("curl http://localhost:55001/")
+        '';
+    })
