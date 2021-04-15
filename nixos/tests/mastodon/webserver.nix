@@ -52,8 +52,8 @@ import ../make-test-python.nix
 
           start_all()
           mastodon.wait_for_unit("multi-user.target")
+          mastodon.wait_for_file("/run/mastodon-web/web.socket")
           # mastodon.log(mastodon.succeed(mastodon_cmd("tootctl settings registrations open")))
-          # mastodon.wait_for_open_port(55001)
           # mastodon.succeed("curl http://localhost:55001/")
         '';
     })
