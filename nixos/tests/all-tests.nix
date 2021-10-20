@@ -211,6 +211,7 @@ in
   jitsi-meet = handleTest ./jitsi-meet.nix {};
   k3s = handleTest ./k3s.nix {};
   kafka = handleTest ./kafka.nix {};
+  kanidm = handleTest ./kanidm.nix {};
   kbd-setfont-decompress = handleTest ./kbd-setfont-decompress.nix {};
   kbd-update-search-paths-patch = handleTest ./kbd-update-search-paths-patch.nix {};
   kea = handleTest ./kea.nix {};
