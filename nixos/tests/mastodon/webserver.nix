@@ -11,6 +11,7 @@ import ../make-test-python.nix
       nodes.mastodon = { lib, ... }:
         {
           virtualisation.memorySize = 2048;
+          virtualisation.cores = 4;
 
           security.pki.certificateFiles = [ certs.ca.cert ];
 
