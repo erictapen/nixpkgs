@@ -434,47 +434,47 @@ in {
     ];
 
     systemd.services.mastodon-init-dirs = {
-      script = ''
-        set -x
-        umask 077
-
-        if ! test -f ${cfg.secretKeyBaseFile}; then
-          mkdir -p $(dirname ${cfg.secretKeyBaseFile})
-          openssl rand -hex 64 > ${cfg.secretKeyBaseFile}
-        fi
-        if ! test -f ${cfg.otpSecretFile}; then
-          mkdir -p $(dirname ${cfg.otpSecretFile})
-          openssl rand -hex 64 > ${cfg.otpSecretFile}
-        fi
-        if ! test -f ${cfg.vapidPrivateKeyFile}; then
-          mkdir -p $(dirname ${cfg.vapidPrivateKeyFile}) $(dirname ${cfg.vapidPublicKeyFile})
-          keypair=$(bin/rake webpush:generate_keys)
-          echo $keypair | grep --only-matching "Private -> [^ ]\+" | sed 's/^Private -> //' > ${cfg.vapidPrivateKeyFile}
-          echo $keypair | grep --only-matching "Public -> [^ ]\+" | sed 's/^Public -> //' > ${cfg.vapidPublicKeyFile}
-        fi
-
-        cat > /var/lib/mastodon/.secrets_env <<EOF
-        SECRET_KEY_BASE="$(cat ${cfg.secretKeyBaseFile})"
-        OTP_SECRET="$(cat ${cfg.otpSecretFile})"
-        VAPID_PRIVATE_KEY="$(cat ${cfg.vapidPrivateKeyFile})"
-        VAPID_PUBLIC_KEY="$(cat ${cfg.vapidPublicKeyFile})"
-      '' + (if !databaseActuallyCreateLocally then ''
-        DB_PASS="$(cat ${cfg.database.passwordFile})"
-      '' else "") + ''
-      '' + (if cfg.smtp.authenticate then ''
-        SMTP_PASSWORD="$(cat ${cfg.smtp.passwordFile})"
-      '' else "") + ''
-        EOF
-      '';
       environment = env;
       serviceConfig = {
         Type = "oneshot";
         WorkingDirectory = cfg.package;
         # System Call Filtering
         SystemCallFilter = [ ("~" + lib.concatStringsSep " " (systemCallsList ++ [ "@resources" ])) "@chown" "pipe" "pipe2" ];
-      } // cfgService;
-      path = [ pkgs.openssl ];
+        ExecStart = pkgs.writeScript "mastodon-init-dirs-start" ''
+          #! ${(pkgs.python3.withPackages (ps: [ ps.ecdsa ]))}/bin/python3
+          import os
+          from os.path import isfile
+          import secrets
+          import ecdsa
+          from base64 import urlsafe_b64encode
 
+          os.umask(0o077)
+
+          def try_init_secret(path, secret):
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            try:
+              open(path, "x").write(secret)
+            except FileExistsError:
+              pass
+
+          try_init_secret("${cfg.secretKeyBaseFile}", secrets.token_hex(64))
+          try_init_secret("${cfg.otpSecretFile}", secrets.token_hex(64))
+          vapid_priv = ecdsa.SigningKey.generate(curve=ecdsa.NIST256p)
+          vapid_pub = vapid_priv.get_verifying_key()
+          try_init_secret("${cfg.vapidPrivateKeyFile}", urlsafe_b64encode(vapid_priv.to_string()).decode())
+          try_init_secret("${cfg.vapidPublicKeyFile}", urlsafe_b64encode(vapid_pub.to_string()).decode())
+
+          # Fill .secrets_env with the individual secrets
+          with open("/var/lib/mastodon/.secrets_env", "w") as f:
+            set = lambda k, v_file: f.write("{}=\"{}\"\n".format(k, open(v_file).read()))
+            set("SECRET_KEY_BASE", "${cfg.secretKeyBaseFile}")
+            set("OTP_SECRET", "${cfg.otpSecretFile}")
+            set("VAPID_PRIVATE_KEY", "${cfg.vapidPrivateKeyFile}")
+            set("VAPID_PUBLIC_KEY", "${cfg.vapidPublicKeyFile}")
+            ${if !databaseActuallyCreateLocally then ''set("DB_PASS", "${cfg.database.passwordFile}")'' else ""}
+            ${if cfg.smtp.authenticate then ''set("SMTP_PASSWORD", "${cfg.smtp.passwordFile}")'' else ""}
+        '';
+      } // cfgService;
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
     };
