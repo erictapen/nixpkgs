@@ -457,7 +457,9 @@ in {
         OTP_SECRET="$(cat ${cfg.otpSecretFile})"
         VAPID_PRIVATE_KEY="$(cat ${cfg.vapidPrivateKeyFile})"
         VAPID_PUBLIC_KEY="$(cat ${cfg.vapidPublicKeyFile})"
+      '' + (if !databaseActuallyCreateLocally then ''
         DB_PASS="$(cat ${cfg.database.passwordFile})"
+      '' else "") + ''
       '' + (if cfg.smtp.authenticate then ''
         SMTP_PASSWORD="$(cat ${cfg.smtp.passwordFile})"
       '' else "") + ''
