@@ -56,5 +56,7 @@ import ../make-test-python.nix
           mastodon.wait_for_file("/run/mastodon-web/web.socket")
           # mastodon.log(mastodon.succeed(mastodon_cmd("tootctl settings registrations open")))
           # mastodon.succeed("curl http://localhost:55001/")
+
+          # mastodon-env tootctl accounts create boss --email boss@example.org --confirmed --role admin
         '';
     })
