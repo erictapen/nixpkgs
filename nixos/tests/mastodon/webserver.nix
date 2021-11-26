@@ -3,6 +3,13 @@ import ../make-test-python.nix
     let
       certs = import ../common/acme/server/snakeoil-certs.nix;
       mastodonDomain = certs.domain;
+      user = {
+        name = "testuser1";
+        email = "testuser1@example.org";
+        password = "thisisnotasecretpassword";
+        # htpasswd -Bbn usernameprefix thisisnotasecretpassword
+        encryptedPassword = "$2y$05$E3XMpUTk77DP832axdgWmOoXJwNw7tC3WZy9xOJUzWYDa4B/.l1Hy";
+      };
     in
     {
       name = "mastodon-webserver";
@@ -29,12 +36,17 @@ import ../make-test-python.nix
               fromAddress = "mail@${mastodonDomain}";
               user = fromAddress;
             };
+            # Mastodon queries the MX record during account creation, except
+            # when the email domain is configured in the allow list.
+            extraConfig.EMAIL_DOMAIN_ALLOWLIST = "example.org";
           };
         };
 
       nodes.client = { ... }:
         {
           security.pki.certificateFiles = [ certs.ca.cert ];
+
+          environment.systemPackages = with pkgs; [ toot ];
         };
 
 
@@ -54,9 +66,13 @@ import ../make-test-python.nix
           start_all()
           mastodon.wait_for_unit("multi-user.target")
           mastodon.wait_for_file("/run/mastodon-web/web.socket")
-          # mastodon.log(mastodon.succeed(mastodon_cmd("tootctl settings registrations open")))
-          # mastodon.succeed("curl http://localhost:55001/")
 
-          # mastodon-env tootctl accounts create boss --email boss@example.org --confirmed --role admin
+          mastodon.succeed(mastodon_cmd("tootctl accounts create ${user.name} --email ${user.email} --confirmed --role admin"))
+          mastodon.succeed("psql -d mastodon -c 'UPDATE users SET encrypted_password = \'${user.encryptedPassword}\' WHERE email = \'${user.email}\';'")
+
+          client.wait_for_unit("multi-user.target")
+          client.succeed("echo \"${user.password}\" | toot login_cli --instance ${mastodonDomain} --email ${user.email}")
+
+          # todo: send confirmation email, curl the link in that email.
         '';
     })
