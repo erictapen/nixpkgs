@@ -61,40 +61,51 @@ in
     };
   };
 
-  config =
-    lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
 
-      systemd.services.kanidm = {
-        description = "Kanidm server";
-        after = [ "network.target" ];
-        wantedBy = [ "multi-user.target" ];
-        serviceConfig = {
-          ExecPreStart = ''
-            ${pkgs.kanidm}/bin/kanidmd domain_name_change \
-              --config ${settingsFormat.generate "config.toml" cfg.settings} \
-              -n ${cfg.ensureDomainName}
-          '';
-          ExecStart = ''
-            ${pkgs.kanidm}/bin/kanidmd server \
-              --config ${settingsFormat.generate "config.toml" cfg.settings}
-          '';
-          Restart = "always";
-          StateDirectory = "kanidm";
-          RuntimeDirectory = "kanidm";
-          RuntimeDirectoryMode = "0700";
-          User = "kanidm";
-          Group = "kanidm";
-        };
+    assertions = [
+      {
+        assertion = isNull cfg.ensureDomainName
+          -> cfg.settings.role == "WriteReplica" || cfg.settings.role == "WriteReplicaNoUI";
+        message = ''
+          services.kanidm.ensureDomainName can only be set if this instance
+          is not a ReadOnlyReplica. Otherwise the db would inherit it from
+          the instance it follows.
+        '';
+      }
+    ];
+
+    systemd.services.kanidm = {
+      description = "Kanidm server";
+      after = [ "network.target" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        ExecPreStart = ''
+          ${pkgs.kanidm}/bin/kanidmd domain_name_change \
+            --config ${settingsFormat.generate "config.toml" cfg.settings} \
+            -n ${cfg.ensureDomainName}
+        '';
+        ExecStart = ''
+          ${pkgs.kanidm}/bin/kanidmd server \
+            --config ${settingsFormat.generate "config.toml" cfg.settings}
+        '';
+        Restart = "always";
+        StateDirectory = "kanidm";
+        RuntimeDirectory = "kanidm";
+        RuntimeDirectoryMode = "0700";
+        User = "kanidm";
+        Group = "kanidm";
       };
-
-      users.users.kanidm = {
-        isSystemUser = true;
-        group = "kanidm";
-        packages = [ pkgs.kanidm ];
-      };
-      users.groups.kanidm = { };
-
     };
+
+    users.users.kanidm = {
+      isSystemUser = true;
+      group = "kanidm";
+      packages = [ pkgs.kanidm ];
+    };
+    users.groups.kanidm = { };
+
+  };
 
   meta.maintainers = with lib.maintainers; [ erictapen ];
 
