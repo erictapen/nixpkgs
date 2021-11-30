@@ -1,6 +1,7 @@
 { stdenv
 , lib
 , formats
+, nixosTests
 , rustPlatform
 , fetchFromGitHub
 , runCommand
@@ -65,12 +66,13 @@ rustPlatform.buildRustPackage rec {
     installShellCompletion --zsh  $releaseDir/build/completions/_*
   '';
 
+  passthru.tests = { inherit (nixosTests) kanidm; };
+
   meta = with lib; {
     description = "A simple, secure and fast identity management platform";
     homepage = "https://github.com/kanidm/kanidm";
     license = licenses.mpl20;
     platforms = platforms.linux;
-    maintainers = [ maintainers.erictapen ];
+    maintainers = with maintainers; [ erictapen Flakebi ];
   };
-
 }
