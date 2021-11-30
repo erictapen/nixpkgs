@@ -9,14 +9,13 @@ import ./make-test-python.nix ({ pkgs, ... }:
   in
   {
     name = "kanidm";
-    meta.maintainers = with pkgs.lib.maintainers; [ erictapen ];
+    meta.maintainers = with pkgs.lib.maintainers; [ erictapen Flakebi ];
 
     nodes.server = { config, pkgs, lib, ... }: {
-
       services.kanidm = {
         enable = true;
         ensureDomainName = serverDomain;
-        settings = {
+        serverSettings = {
           domain_name = serverDomain;
           origin = "https://idm.${serverDomain}";
           bindaddress = "[::1]:8443";
