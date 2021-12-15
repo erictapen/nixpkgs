@@ -15,6 +15,7 @@
     if stdenv.targetPlatform.linker == "lld"
     then null
     else pkgs.bintools
+, llvmSources ? null
 , darwin
 }:
 
@@ -27,7 +28,7 @@ let
   version = if rev != "" then rev-version else "${release_version}${dash-candidate}";
   targetConfig = stdenv.targetPlatform.config;
 
-  src = fetchFromGitHub {
+  src = if !isNull llvmSources then llvmSources else fetchFromGitHub {
     owner = "llvm";
     repo = "llvm-project";
     rev = if rev != "" then rev else "llvmorg-${version}";
