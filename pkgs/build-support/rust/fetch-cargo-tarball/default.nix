@@ -32,7 +32,7 @@ let hash_ =
   else throw "fetchCargoTarball requires a hash for ${name}";
 in stdenv.mkDerivation ({
   name = "${name}-vendor.tar.gz";
-  nativeBuildInputs = [ cacert git cargo-vendor-normalise cargo ];
+  nativeBuildInputs = [ cacert git cargo-vendor-normalise cargo ] ++ (args.nativeBuildInputs or []);
 
   buildPhase = ''
     runHook preBuild
@@ -82,5 +82,5 @@ in stdenv.mkDerivation ({
 
   impureEnvVars = lib.fetchers.proxyImpureEnvVars;
 } // (builtins.removeAttrs args [
-  "name" "sha256" "cargoUpdateHook"
+  "name" "sha256" "cargoUpdateHook" "nativeBuildInputs"
 ]))
