@@ -15973,6 +15973,8 @@ with pkgs;
 
   llvmPackages_rocm = recurseIntoAttrs (callPackage ../development/compilers/llvm/rocm { });
 
+  llvmPackages_xtensa = recurseIntoAttrs (callPackage ../development/compilers/llvm/xtensa { });
+
   lorri = callPackage ../tools/misc/lorri {
     inherit (darwin.apple_sdk.frameworks) CoreServices Security;
   };

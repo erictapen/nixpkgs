@@ -17,7 +17,8 @@
     else pkgs.bintools
 , llvmSources ? null
 , darwin
-}:
+, ...
+}@args:
 
 let
   release_version = "13.0.1";
@@ -28,12 +29,12 @@ let
   version = if rev != "" then rev-version else "${release_version}${dash-candidate}";
   targetConfig = stdenv.targetPlatform.config;
 
-  src = if !isNull llvmSources then llvmSources else fetchFromGitHub {
+  src = args.llvmSources or (fetchFromGitHub {
     owner = "llvm";
     repo = "llvm-project";
     rev = if rev != "" then rev else "llvmorg-${version}";
     sha256 = "06dv6h5dmvzdxbif2s8njki6h32796v368dyb5945x8gjj72xh7k";
-  };
+  });
 
   llvm_meta = {
     license     = lib.licenses.ncsa;
