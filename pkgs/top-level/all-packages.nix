@@ -16378,6 +16378,10 @@ with pkgs;
   };
   rust = rust_1_69;
 
+  rust-xtensa = callPackage ../development/compilers/rust/xtensa.nix {
+    rust = rust_1_56;
+  };
+
   mrustc = callPackage ../development/compilers/mrustc { };
   mrustc-minicargo = callPackage ../development/compilers/mrustc/minicargo.nix { };
   mrustc-bootstrap = callPackage ../development/compilers/mrustc/bootstrap.nix {
