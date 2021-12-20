@@ -141,7 +141,8 @@ in {
     ];
 
     environment.systemPackages = [ cfg.package ]
-                                 ++ lib.optional cfg.jack.enable jack-libs;
+                                 ++ lib.optional cfg.jack.enable jack-libs
+                                 ++ lib.optional cfg.pulse.enable pkgs.pulseaudio;
 
     systemd.packages = [ cfg.package ]
                        ++ lib.optional cfg.pulse.enable cfg.package.pulse;
