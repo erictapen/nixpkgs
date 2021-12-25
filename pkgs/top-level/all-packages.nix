@@ -5831,11 +5831,7 @@ with pkgs;
 
   mmctl = callPackage ../tools/misc/mmctl { };
 
-  moar = callPackage ../tools/misc/moar { };
-
-  mobilizon = callPackage ../servers/mobilizon {
-    inherit (beam.packages.erlang) mixRelease fetchMixDeps;
-  };
+  mobilizon = callPackage ../servers/mobilizon { };
 
   molly-brown = callPackage ../servers/gemini/molly-brown { };
 
