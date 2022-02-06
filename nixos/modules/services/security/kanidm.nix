@@ -50,107 +50,107 @@ let
 
 in
 {
-  options = {
-    services.kanidm = {
-      enable = lib.mkEnableOption "the kanidm server";
-      enablePam = lib.mkEnableOption "the pam and nsswitch integration of kanidm";
+  options.services.kanidm = {
+    enable = lib.mkEnableOption "the kanidm server";
+    enablePam = lib.mkEnableOption "the pam and nsswitch integration of kanidm";
 
-      package = lib.mkOption {
-        type = lib.types.package;
-        default = pkgs.kanidm;
-        description = "Which kanidm package to use.";
-      };
+    package = lib.mkOption {
+      type = lib.types.package;
+      default = pkgs.kanidm;
+      description = "Which kanidm package to use.";
+    };
 
-      ensureDomainName = lib.mkOption {
-        description = ''
-          The domain_name that Kanidm manages. It must be a descendant or equal to the domain
-          specified in settings.origin. It is always set when the server starts up.
-          While in theory it could be changed later, you should carefully consider these
-          warnings:
-          <link xlink:href="https://kanidm.github.io/kanidm/administrivia.html#rename-the-domain"/>
-        '';
-        example = "example.org";
-        type = lib.types.str;
-      };
+    ensureDomainName = lib.mkOption {
+      description = ''
+        The domain_name that Kanidm manages. It must be a descendant or equal to the domain
+        specified in settings.origin. It is always set when the server starts up.
+        While in theory it could be changed later, you should carefully consider these
+        warnings:
+        <link xlink:href="https://kanidm.github.io/kanidm/administrivia.html#rename-the-domain"/>
+      '';
+      example = "example.org";
+      type = lib.types.str;
+    };
 
-      serverSettings = lib.mkOption {
-        type = lib.types.submodule {
-          freeformType = settingsFormat.type;
+    serverSettings = lib.mkOption {
+      type = lib.types.submodule {
+        freeformType = settingsFormat.type;
 
-          options.bindaddress = lib.mkOption {
+        options = {
+          bindaddress = lib.mkOption {
             description = "Address/port combination the webserver binds to.";
             example = "[::1]:8443";
             type = lib.types.str;
           };
-          options.ldapbindaddress = lib.mkOption {
+          ldapbindaddress = lib.mkOption {
             description = "Address/port combination the emulated ldap server binds to.";
             example = "[::1]:389";
             default = "";
             type = lib.types.str;
           };
-          options.origin = lib.mkOption {
+          origin = lib.mkOption {
             description = "The origin of your kanidm instance. Must have https as protocol.";
             example = "https://idm.example.org";
             type = lib.types.str;
           };
-          options.db_path = lib.mkOption {
+          db_path = lib.mkOption {
             description = "Path to kanidm database.";
             default = "/var/lib/kanidm/kanidm.db";
             type = lib.types.path;
           };
-          options.log_level = lib.mkOption {
+          log_level = lib.mkOption {
             description = "Log level of the server.";
             default = "default";
             type = lib.types.enum [ "default" "verbose" "perfbasic" "perffull" ];
           };
-          options.role = lib.mkOption {
+          role = lib.mkOption {
             description = "The role of this server. This affects features available and how replication may interact.";
             default = "WriteReplica";
             type = lib.types.enum [ "WriteReplica" "WriteReplicaNoUI" "ReadOnlyReplica" ];
           };
         };
-        default = { };
-        description = ''
-          Settings for kanidm, see
-          <link xlink:href="https://github.com/kanidm/kanidm/blob/master/kanidm_book/src/server_configuration.md">the documentation</link>
-          and <link xlink:href="https://github.com/kanidm/kanidm/blob/master/examples/server.toml"/>
-          for the example config.
-        '';
       };
+      default = { };
+      description = ''
+        Settings for kanidm, see
+        <link xlink:href="https://github.com/kanidm/kanidm/blob/master/kanidm_book/src/server_configuration.md">the documentation</link>
+        and <link xlink:href="https://github.com/kanidm/kanidm/blob/master/examples/server.toml"/>
+        for the example config.
+      '';
+    };
 
-      clientSettings = lib.mkOption {
-        type = lib.types.submodule {
-          freeformType = settingsFormat.type;
+    clientSettings = lib.mkOption {
+      type = lib.types.submodule {
+        freeformType = settingsFormat.type;
 
-          options.uri = lib.mkOption {
-            description = "Address of the kanidm server.";
-            example = "http://127.0.0.1:8080";
-            type = lib.types.str;
-          };
+        options.uri = lib.mkOption {
+          description = "Address of the kanidm server.";
+          example = "http://127.0.0.1:8080";
+          type = lib.types.str;
         };
-        description = ''
-          Configure kanidm clients, needed for the PAM daemon.
-          See <link xlink:href="https://github.com/kanidm/kanidm/blob/master/kanidm_book/src/client_tools.md#kanidm-configuration">the documentation</link>
-          for possible settings.
-        '';
       };
+      description = ''
+        Configure kanidm clients, needed for the PAM daemon.
+        See <link xlink:href="https://github.com/kanidm/kanidm/blob/master/kanidm_book/src/client_tools.md#kanidm-configuration">the documentation</link>
+        for possible settings.
+      '';
+    };
 
-      unixSettings = lib.mkOption {
-        type = lib.types.submodule {
-          freeformType = settingsFormat.type;
+    unixSettings = lib.mkOption {
+      type = lib.types.submodule {
+        freeformType = settingsFormat.type;
 
-          options.pam_allowed_login_groups = lib.mkOption {
-            description = "kanidm group that is allowed to login in PAM";
-            example = "my_pam_group";
-            type = lib.types.str;
-          };
+        options.pam_allowed_login_groups = lib.mkOption {
+          description = "kanidm group that is allowed to login in PAM";
+          example = "my_pam_group";
+          type = lib.types.listOf lib.types.str;
         };
-        description = ''
-          Configure kanidm unix daemon.
-          See <link xlink:href="https://github.com/kanidm/kanidm/blob/master/kanidm_book/src/pam_and_nsswitch.md#the-unix-daemon">the documentation</link>
-          for possible settings.
-        '';
       };
+      description = ''
+        Configure kanidm unix daemon.
+        See <link xlink:href="https://github.com/kanidm/kanidm/blob/master/kanidm_book/src/pam_and_nsswitch.md#the-unix-daemon">the documentation</link>
+        for possible settings.
+      '';
     };
   };
 
