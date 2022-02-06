@@ -17,16 +17,13 @@ let
 in
 rustPlatform.buildRustPackage rec {
   pname = "kanidm";
-  # Latest version doesn't have OIDC support. This can be changed to a stable
-  # release as soon as a new version comes out.
-  version = "unstable-2021-11-21";
+  version = "1.1.0-alpha.7";
 
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
-    # master from 2021-11-21
-    rev = "0f4189a57ef9fb0f048cd2cc3f5eee3d132adbd1";
-    sha256 = "sha256-+FOcRWy8YOPAl5VgUKM1x5ZQkArYP+0rwrCQxXJ4Ms0=";
+    rev = "v${version}";
+    sha256 = "C+ITINRQLJjC8sL2PKvnnHHdLQ3y5OWz0wNMDfmn2vw=";
   };
 
   postPatch =
@@ -59,7 +56,7 @@ rustPlatform.buildRustPackage rec {
     pam
   ];
 
-  cargoHash = "sha256:0diqj41wmv0gki0lmq5c24wn2yfkkp1giabn2mcxap1sfra2mi4a";
+  cargoHash = "sha256-Cm3gNm3amUsJxDPsXDsGr+lFnN+H6XzIp4UmiUIdofM=";
 
   preFixup = ''
     installShellCompletion --bash $releaseDir/build/completions/*.bash
