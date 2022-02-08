@@ -132,9 +132,10 @@ in
         };
       };
       description = ''
-        Configure Kanidm clients, needed for the PAM daemon.
-        See <link xlink:href="https://github.com/kanidm/kanidm/blob/master/kanidm_book/src/client_tools.md#kanidm-configuration">the documentation</link>
-        for possible settings.
+        Configure Kanidm clients, needed for the PAM daemon. See
+        <link xlink:href="https://github.com/kanidm/kanidm/blob/master/kanidm_book/src/client_tools.md#kanidm-configuration">the documentation</link>
+        and <link xlink:href="https://github.com/kanidm/kanidm/blob/master/examples/config">example configuration</link>
+        for possible values.
       '';
     };
 
@@ -151,7 +152,8 @@ in
       description = ''
         Configure Kanidm unix daemon.
         See <link xlink:href="https://github.com/kanidm/kanidm/blob/master/kanidm_book/src/pam_and_nsswitch.md#the-unix-daemon">the documentation</link>
-        for possible settings.
+        and <link xlink:href="https://github.com/kanidm/kanidm/blob/master/examples/unixd">example configuration</link>
+        for possible values.
       '';
     };
   };
