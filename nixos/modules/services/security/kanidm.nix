@@ -54,12 +54,6 @@ in
     enable = lib.mkEnableOption "the Kanidm server";
     enablePam = lib.mkEnableOption "the Kanidm client for PAM and NSS integration.";
 
-    package = lib.mkOption {
-      type = lib.types.package;
-      default = pkgs.kanidm;
-      description = "Which Kanidm package to use.";
-    };
-
     ensureDomainName = lib.mkOption {
       description = ''
         The <literal>domain_name</literal> that Kanidm manages. Must be below or equal to the domain
@@ -195,7 +189,7 @@ in
         }
       ];
 
-    environment.systemPackages = [ cfg.package ];
+    environment.systemPackages = [ pkgs.kanidm ];
 
     systemd.services.kanidm = lib.mkIf cfg.enable {
       description = "kanidm identity management daemon";
@@ -204,9 +198,9 @@ in
       serviceConfig = defaultServiceConfig // {
         StateDirectory = "kanidm";
         StateDirectoryMode = "0700";
-        ExecStart = "${cfg.package}/bin/kanidmd server -c ${serverConfigFile}";
+        ExecStart = "${pkgs.kanidm}/bin/kanidmd server -c ${serverConfigFile}";
         ExecPreStart = ''
-          ${cfg.package}/bin/kanidmd domain_name_change \
+          ${pkgs.kanidm}/bin/kanidmd domain_name_change \
             -c ${serverConfigFile} \
             -n ${cfg.ensureDomainName}
         '';
@@ -232,7 +226,7 @@ in
         CacheDirectory = "kanidm-unixd";
         CacheDirectoryMode = "0700";
         RuntimeDirectory = "kanidm-unixd";
-        ExecStart = "${cfg.package}/bin/kanidm_unixd";
+        ExecStart = "${pkgs.kanidm}/bin/kanidm_unixd";
         User = "kanidm-unixd";
         Group = "kanidm-unixd";
 
@@ -264,7 +258,7 @@ in
       partOf = [ "kanidm-unixd.service" ];
       restartTriggers = [ unixConfigFile clientConfigFile ];
       serviceConfig = {
-        ExecStart = "${cfg.package}/bin/kanidm_unixd_tasks";
+        ExecStart = "${pkgs.kanidm}/bin/kanidm_unixd_tasks";
 
         BindReadOnlyPaths = [
           "/nix/store"
@@ -304,7 +298,7 @@ in
       })
     ];
 
-    system.nssModules = lib.mkIf cfg.enablePam [ cfg.package ];
+    system.nssModules = lib.mkIf cfg.enablePam [ pkgs.kanidm ];
 
     system.nssDatabases.group = lib.optional cfg.enablePam "kanidm";
     system.nssDatabases.passwd = lib.optional cfg.enablePam "kanidm";
