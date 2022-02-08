@@ -96,6 +96,7 @@ in
           db_path = lib.mkOption {
             description = "Path to kanidm database.";
             default = "/var/lib/kanidm/kanidm.db";
+            readOnly = true;
             type = lib.types.path;
           };
           log_level = lib.mkOption {
