@@ -332,4 +332,6 @@ in
   };
 
   meta.maintainers = with lib.maintainers; [ erictapen Flakebi ];
+  meta.buildDocsInSandbox = false;
+
 }
