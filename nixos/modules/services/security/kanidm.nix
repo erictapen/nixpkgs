@@ -84,14 +84,14 @@ in
           };
           ldapbindaddress = lib.mkOption {
             description = "Address/port combination the emulated ldap server binds to.";
-            example = "[::1]:389";
+            example = "[::1]:636";
             default = "";
             type = lib.types.str;
           };
           origin = lib.mkOption {
             description = "The origin of your kanidm instance. Must have https as protocol.";
             example = "https://idm.example.org";
-            type = lib.types.str;
+            type = lib.types.strMatching "^https://.*";
           };
           db_path = lib.mkOption {
             description = "Path to kanidm database.";
