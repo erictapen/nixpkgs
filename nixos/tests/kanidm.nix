@@ -19,26 +19,12 @@ import ./make-test-python.nix ({ pkgs, ... }:
 
       services.nginx = {
         enable = true;
+        recommendedProxySettings = true;
         virtualHosts."${serverDomain}" = {
           forceSSL = true;
           sslCertificate = certs."${serverDomain}".cert;
           sslCertificateKey = certs."${serverDomain}".key;
-          locations."/" = {
-            proxyPass = "http://[::1]:8443";
-            extraConfig = ''
-              proxy_http_version  1.1;
-              proxy_cache_bypass  $http_upgrade;
-
-              proxy_set_header Upgrade           $http_upgrade;
-              proxy_set_header Connection        "upgrade";
-              proxy_set_header Host              $host;
-              proxy_set_header X-Real-IP         $remote_addr;
-              proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto $scheme;
-              proxy_set_header X-Forwarded-Host  $host;
-              proxy_set_header X-Forwarded-Port  $server_port;
-            '';
-          };
+          locations."/".proxyPass = "http://[::1]:8443";
         };
       };
 

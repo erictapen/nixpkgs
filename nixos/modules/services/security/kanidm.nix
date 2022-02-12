@@ -206,25 +206,26 @@ in
         ExecStartPre = pkgs.writeShellScript "kanidm-start-pre.sh" ''
           set -euo pipefail
           umask 077
-          log="$(${pkgs.coreutils}/bin/mktemp)"
+          PATH=${lib.makeBinPath (with pkgs; [ coreutils gawk gnugrep gnused ])}
+          log="$(mktemp)"
           # Try to set domain name
           ${pkgs.kanidm}/bin/kanidmd domain_name_change \
             -c ${serverConfigFile} \
-            -n ${cfg.ensureDomainName} | ${pkgs.coreutils}/bin/tee "$log"
+            -n ${cfg.ensureDomainName} | tee "$log"
           # Exit status is always 0, so search for error messages
-          if ${pkgs.gnugrep}/bin/grep -q 'admin.error' "$log"; then
+          if grep -q 'admin.error' "$log"; then
             # If it failed, extract the old domain name and create a temporary config
-            olddomain="$(${pkgs.gawk}/bin/awk 'match($0, /rp_id: "(.*)"/, m) { print m[1] }' "$log")"
-            ${pkgs.coreutils}/bin/rm "$log"
+            olddomain="$(awk 'match($0, /rp_id: "(.*)"/, m) { print m[1] }' "$log")"
+            rm "$log"
 
             echo "Using temporary config with old domain name '$olddomain'"
             # Create temporary config with old domain name
-            config="$(${pkgs.coreutils}/bin/mktemp)"
-            ${pkgs.gnused}/bin/sed ${dummyServerConfigFile} -e "s#@origin@#https://$olddomain#" > "$config"
+            config="$(mktemp)"
+            sed ${dummyServerConfigFile} -e "s#@origin@#https://$olddomain#" > "$config"
             ${pkgs.kanidm}/bin/kanidmd domain_name_change \
               -c "$config" \
               -n ${cfg.ensureDomainName}
-            ${pkgs.coreutils}/bin/rm "$config"
+            rm "$config"
           fi
         '';
         User = "kanidm";
