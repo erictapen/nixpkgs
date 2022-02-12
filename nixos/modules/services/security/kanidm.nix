@@ -3,6 +3,7 @@ let
   cfg = config.services.kanidm;
   settingsFormat = pkgs.formats.toml { };
   serverConfigFile = settingsFormat.generate "server.toml" cfg.serverSettings;
+  dummyServerConfigFile = settingsFormat.generate "server.toml" (cfg.serverSettings // { origin = "@origin@"; });
   clientConfigFile = settingsFormat.generate "kanidm-config.toml" cfg.clientSettings;
   unixConfigFile = settingsFormat.generate "kanidm-unixd.toml" cfg.unixSettings;
 
@@ -75,14 +76,14 @@ in
             example = "[::1]:8443";
             type = lib.types.str;
           };
-          ldapbindaddress = lib.mkOption {
+          # Should be optional but toml does not accept null
+          /*ldapbindaddress = lib.mkOption {
             description = ''
               Address and port the LDAP server is bound to. Setting this to an empty string disables the LDAP interface.
             '';
             example = "[::1]:636";
-            default = "";
             type = lib.types.str;
-          };
+          };*/
           origin = lib.mkOption {
             description = "The origin of your Kanidm instance. Must have https as protocol.";
             example = "https://idm.example.org";
@@ -199,10 +200,32 @@ in
         StateDirectory = "kanidm";
         StateDirectoryMode = "0700";
         ExecStart = "${pkgs.kanidm}/bin/kanidmd server -c ${serverConfigFile}";
-        ExecPreStart = ''
+        # There is currently no nice way to set the domain name, because origin
+        # in the config needs to be consistent with the current domain name:
+        # https://github.com/kanidm/kanidm/issues/623
+        ExecStartPre = pkgs.writeShellScript "kanidm-start-pre.sh" ''
+          set -euo pipefail
+          umask 077
+          log="$(${pkgs.coreutils}/bin/mktemp)"
+          # Try to set domain name
           ${pkgs.kanidm}/bin/kanidmd domain_name_change \
             -c ${serverConfigFile} \
-            -n ${cfg.ensureDomainName}
+            -n ${cfg.ensureDomainName} | ${pkgs.coreutils}/bin/tee "$log"
+          # Exit status is always 0, so search for error messages
+          if ${pkgs.gnugrep}/bin/grep -q 'admin.error' "$log"; then
+            # If it failed, extract the old domain name and create a temporary config
+            olddomain="$(${pkgs.gawk}/bin/awk 'match($0, /rp_id: "(.*)"/, m) { print m[1] }' "$log")"
+            ${pkgs.coreutils}/bin/rm "$log"
+
+            echo "Using temporary config with old domain name '$olddomain'"
+            # Create temporary config with old domain name
+            config="$(${pkgs.coreutils}/bin/mktemp)"
+            ${pkgs.gnused}/bin/sed ${dummyServerConfigFile} -e "s#@origin@#https://$olddomain#" > "$config"
+            ${pkgs.kanidm}/bin/kanidmd domain_name_change \
+              -c "$config" \
+              -n ${cfg.ensureDomainName}
+            ${pkgs.coreutils}/bin/rm "$config"
+          fi
         '';
         User = "kanidm";
         Group = "kanidm";

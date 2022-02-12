@@ -2,10 +2,6 @@ import ./make-test-python.nix ({ pkgs, ... }:
   let
     certs = import ./common/acme/server/snakeoil-certs.nix;
     serverDomain = certs.domain;
-    admin = {
-      username = "admin";
-      password = "snakeoilpass";
-    };
   in
   {
     name = "kanidm";
@@ -16,24 +12,41 @@ import ./make-test-python.nix ({ pkgs, ... }:
         enable = true;
         ensureDomainName = serverDomain;
         serverSettings = {
-          domain_name = serverDomain;
-          origin = "https://idm.${serverDomain}";
+          origin = "https://${serverDomain}";
           bindaddress = "[::1]:8443";
         };
       };
 
-      services.nginx.virtualHosts."${serverDomain}" = {
-        enableACME = lib.mkForce false;
-        sslCertificate = certs."${serverDomain}".cert;
-        sslCertificateKey = certs."${serverDomain}".key;
+      services.nginx = {
+        enable = true;
+        virtualHosts."${serverDomain}" = {
+          forceSSL = true;
+          sslCertificate = certs."${serverDomain}".cert;
+          sslCertificateKey = certs."${serverDomain}".key;
+          locations."/" = {
+            proxyPass = "http://[::1]:8443";
+            extraConfig = ''
+              proxy_http_version  1.1;
+              proxy_cache_bypass  $http_upgrade;
+
+              proxy_set_header Upgrade           $http_upgrade;
+              proxy_set_header Connection        "upgrade";
+              proxy_set_header Host              $host;
+              proxy_set_header X-Real-IP         $remote_addr;
+              proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header X-Forwarded-Host  $host;
+              proxy_set_header X-Forwarded-Port  $server_port;
+            '';
+          };
+        };
       };
 
       security.pki.certificateFiles = [ certs.ca.cert ];
 
-      networking.hosts."::1" = [ "${serverDomain}" ];
+      networking.hosts."::1" = [ serverDomain ];
       networking.firewall.allowedTCPPorts = [ 80 443 ];
 
-      environment.systemPackages = [ pkgs.kanidm ];
       users.users.kanidm.shell = pkgs.bashInteractive;
     };
 
@@ -42,11 +55,9 @@ import ./make-test-python.nix ({ pkgs, ... }:
 
       environment.etc."kanidm/config".text = ''
         uri = "https://${serverDomain}"
-        verify_ca = true
-        verify_hostnames = true
       '';
 
-      networking.hosts."${nodes.server.config.networking.primaryIPAddress}" = [ "${serverDomain}" ];
+      networking.hosts."${nodes.server.config.networking.primaryIPAddress}" = [ serverDomain ];
 
       security.pki.certificateFiles = [ certs.ca.cert ];
     };
@@ -54,5 +65,7 @@ import ./make-test-python.nix ({ pkgs, ... }:
     testScript = ''
       start_all()
       server.wait_for_unit("kanidm.service")
+      server.wait_until_succeeds("curl -sf https://${serverDomain} | grep Kanidm")
+      client.wait_until_succeeds("kanidm login -D anonymous && kanidm self whoami | grep anonymous@${serverDomain}")
     '';
   })
