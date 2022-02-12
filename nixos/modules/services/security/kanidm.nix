@@ -52,8 +52,9 @@ let
 in
 {
   options.services.kanidm = {
-    enable = lib.mkEnableOption "the Kanidm server";
-    enablePam = lib.mkEnableOption "the Kanidm client for PAM and NSS integration.";
+    enableClient = lib.mkEnableOption "the Kanidm client";
+    enableServer = lib.mkEnableOption "the Kanidm server";
+    enablePam = lib.mkEnableOption "the Kanidm PAM and NSS integration.";
 
     ensureDomainName = lib.mkOption {
       description = ''
@@ -153,11 +154,11 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable || cfg.enablePam) {
+  config = lib.mkIf (cfg.enableClient || cfg.enableServer || cfg.enablePam) {
     assertions =
       [
         {
-          assertion = !cfg.enable || ((cfg.serverSettings.tls_chain or null) == null) || (!lib.isStorePath cfg.serverSettings.tls_chain);
+          assertion = !cfg.enableServer || ((cfg.serverSettings.tls_chain or null) == null) || (!lib.isStorePath cfg.serverSettings.tls_chain);
           message = ''
             <option>services.kanidm.serverSettings.tls_chain</option> points to
             a file in the Nix store. You should use a quoted absolute path to
@@ -165,11 +166,18 @@ in
           '';
         }
         {
-          assertion = !cfg.enable || ((cfg.serverSettings.tls_key or null) == null) || (!lib.isStorePath cfg.serverSettings.tls_key);
+          assertion = !cfg.enableServer || ((cfg.serverSettings.tls_key or null) == null) || (!lib.isStorePath cfg.serverSettings.tls_key);
           message = ''
             <option>services.kanidm.serverSettings.tls_key</option> points to
             a file in the Nix store. You should use a quoted absolute path to
             prevent this.
+          '';
+        }
+        {
+          assertion = !cfg.enableClient || options.services.kanidm.clientSettings.isDefined;
+          message = ''
+            <option>services.kanidm.clientSettings</option> needs to be configured
+            if the client is enabled.
           '';
         }
         {
@@ -180,7 +188,7 @@ in
           '';
         }
         {
-          assertion = !cfg.enable || (isNull cfg.ensureDomainName
+          assertion = !cfg.enableServer || (isNull cfg.ensureDomainName
             -> cfg.settings.role == "WriteReplica" || cfg.settings.role == "WriteReplicaNoUI");
           message = ''
             <option>services.kanidm.ensureDomainName</option> can only be set if this instance
@@ -190,9 +198,9 @@ in
         }
       ];
 
-    environment.systemPackages = [ pkgs.kanidm ];
+    environment.systemPackages = lib.mkIf cfg.enableClient [ pkgs.kanidm ];
 
-    systemd.services.kanidm = lib.mkIf cfg.enable {
+    systemd.services.kanidm = lib.mkIf cfg.enableServer {
       description = "kanidm identity management daemon";
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
@@ -328,7 +336,7 @@ in
     system.nssDatabases.passwd = lib.optional cfg.enablePam "kanidm";
 
     users.groups = lib.mkMerge [
-      (lib.mkIf cfg.enable {
+      (lib.mkIf cfg.enableServer {
         kanidm = {};
       })
       (lib.mkIf cfg.enablePam {
@@ -336,7 +344,7 @@ in
       })
     ];
     users.users = lib.mkMerge [
-      (lib.mkIf cfg.enable {
+      (lib.mkIf cfg.enableServer {
         kanidm = {
           description = "Kanidm server";
           isSystemUser = true;
@@ -355,5 +363,4 @@ in
 
   meta.maintainers = with lib.maintainers; [ erictapen Flakebi ];
   meta.buildDocsInSandbox = false;
-
 }

@@ -9,7 +9,7 @@ import ./make-test-python.nix ({ pkgs, ... }:
 
     nodes.server = { config, pkgs, lib, ... }: {
       services.kanidm = {
-        enable = true;
+        enableServer = true;
         ensureDomainName = serverDomain;
         serverSettings = {
           origin = "https://${serverDomain}";
@@ -37,11 +37,12 @@ import ./make-test-python.nix ({ pkgs, ... }:
     };
 
     nodes.client = { pkgs, nodes, ... }: {
-      environment.systemPackages = [ pkgs.kanidm ];
-
-      environment.etc."kanidm/config".text = ''
-        uri = "https://${serverDomain}"
-      '';
+      services.kanidm = {
+        enableClient = true;
+        clientSettings = {
+          uri = "https://${serverDomain}";
+        };
+      };
 
       networking.hosts."${nodes.server.config.networking.primaryIPAddress}" = [ serverDomain ];
 
