@@ -16,6 +16,7 @@
     then null
     else pkgs.bintools
 , darwin
+, llvmSources ? null
 }:
 
 let
@@ -27,7 +28,7 @@ let
   version = if rev != "" then rev-version else "${release_version}${dash-candidate}";
   targetConfig = stdenv.targetPlatform.config;
 
-  monorepoSrc = fetchFromGitHub {
+  monorepoSrc = if llvmSources != null then llvmSources else fetchFromGitHub {
     owner = "llvm";
     repo = "llvm-project";
     rev = if rev != "" then rev else "llvmorg-${version}";
