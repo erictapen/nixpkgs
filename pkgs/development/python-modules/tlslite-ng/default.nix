@@ -6,11 +6,11 @@
 
 buildPythonPackage rec {
   pname = "tlslite-ng";
-  version = "0.7.6";
+  version = "0.8.0-alpha43";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "6ab56f0e9629ce3d807eb528c9112defa9f2e00af2b2961254e8429ca5c1ff00";
+    sha256 = "sha256-CCVVR9LNkHGvEhq07V+XaHDl9S8cmwsR2WdT7FwPLAA=";
   };
 
   buildInputs = [ ecdsa ];
