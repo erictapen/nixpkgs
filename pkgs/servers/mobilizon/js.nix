@@ -23,6 +23,9 @@ mkYarnPackage rec {
     runHook postBuild
   '';
 
+  # doCheck = true;
+  # checkPhase = "yarn test:unit";
+
   nativeBuildInputs = [ imagemagick ];
 
   meta = with lib; {
