@@ -4,9 +4,6 @@ mkYarnPackage rec {
   src = applyPatches {
     name = "mobilizon-js-src";
     src = "${mobilizon-src}/js";
-    patches = [
-      ./set-interval.patch
-    ];
   };
 
   packageJSON = ./package.json;
