@@ -19,14 +19,14 @@ let
 in
 mixRelease rec {
   pname = "mobilizon";
-  version = "3.0.0-beta.1";
+  version = "3.0.0-beta.1-unstable";
 
   src = if srcOverride != null then srcOverride else fetchFromGitLab {
     domain = "framagit.org";
     owner = "framasoft";
     repo = pname;
-    rev = version;
-    sha256 = "sha256-Yo+qDInp+zcUScN/XbE5Pl7TVXC6FoYT4uin7BI4pUo=";
+    rev = "c08079595583c8413d8d77738349902dda966427";
+    sha256 = "0000000000000000000000000000000000000000000000000000000000000000";
   };
 
   nativeBuildInputs = [ git cmake ];
@@ -156,6 +156,8 @@ mixRelease rec {
   passthru = {
     tests.smoke-test = nixosTests.mobilizon;
     updateScript = writeShellScriptBin "update.sh" ''
+      set -eou pipefail
+
       SRC=$(nix path-info .#mobilizon.src)
       ${yarn2nix}/bin/yarn2nix --lockfile="$SRC/js/yarn.lock" > pkgs/servers/mobilizon/yarn.nix
       ${mix2nix}/bin/mix2nix $SRC/mix.lock > pkgs/servers/mobilizon/mix.nix
