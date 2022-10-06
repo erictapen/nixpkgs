@@ -1503,6 +1503,19 @@ let
       beamDeps = [ combine plug ];
     };
 
+    replug = buildMix rec {
+      name = "replug";
+      version = "0.1.0";
+
+      src = fetchHex {
+        pkg = "${name}";
+        version = "${version}";
+        sha256 = "0q7sikahnvmr8jw9ziklh2am73h9cilhq1j697z59s24x5bpl7zp";
+      };
+
+      beamDeps = [ plug ];
+    };
+
     sentry = buildMix rec {
       name = "sentry";
       version = "8.0.6";
