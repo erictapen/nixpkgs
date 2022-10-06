@@ -26,7 +26,7 @@ mixRelease rec {
     owner = "framasoft";
     repo = pname;
     rev = "c08079595583c8413d8d77738349902dda966427";
-    sha256 = "0000000000000000000000000000000000000000000000000000000000000000";
+    sha256 = "sha256-76idNZ2jQBCIiZ3gzVa6mJuWKu/CWuzbJ0TzE2r0HIQ=";
   };
 
   nativeBuildInputs = [ git cmake ];
