@@ -25,8 +25,8 @@ mixRelease rec {
     domain = "framagit.org";
     owner = "framasoft";
     repo = pname;
-    rev = "c08079595583c8413d8d77738349902dda966427";
-    sha256 = "sha256-76idNZ2jQBCIiZ3gzVa6mJuWKu/CWuzbJ0TzE2r0HIQ=";
+    rev = "0d6626d55a509711458f593dea75ab2dcb9624c5";
+    sha256 = "sha256-zL0tn74zRIMd5vYiJxRorg3fpYWl17GBDnRsUUvR0JI=";
   };
 
   nativeBuildInputs = [ git cmake ];
@@ -151,6 +151,12 @@ mixRelease rec {
     js = callPackage ./js.nix { mobilizon-src = src; };
   in ''
     cp -a "${js}/libexec/mobilizon/deps/priv/static" ./priv
+    chmod 770 -R ./priv
+    locale
+  '';
+
+  postBuild = ''
+    mix phx.digest --no-deps-check
   '';
 
   passthru = {
