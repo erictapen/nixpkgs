@@ -19,14 +19,14 @@ let
 in
 mixRelease rec {
   pname = "mobilizon";
-  version = "3.0.0-beta.1-unstable";
+  version = "3.0.0-beta.2";
 
   src = if srcOverride != null then srcOverride else fetchFromGitLab {
     domain = "framagit.org";
     owner = "framasoft";
     repo = pname;
-    rev = "0d6626d55a509711458f593dea75ab2dcb9624c5";
-    sha256 = "sha256-zL0tn74zRIMd5vYiJxRorg3fpYWl17GBDnRsUUvR0JI=";
+    rev = version;
+    sha256 = "sha256-BCxYYestaLJYPzZSXA7K3GsAVUFdmfKNtw72VBaSiVQ=";
   };
 
   nativeBuildInputs = [ git cmake ];
