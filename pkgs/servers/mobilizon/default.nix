@@ -8,6 +8,7 @@
 , fetchFromGitLab
 , fetchFromGitHub
 , fetchgit
+, fetchurl
 , git
 , cmake
 , nixosTests
@@ -28,6 +29,14 @@ mixRelease rec {
     rev = version;
     sha256 = "sha256-BCxYYestaLJYPzZSXA7K3GsAVUFdmfKNtw72VBaSiVQ=";
   };
+
+  patches = [
+    # Fix for https://framagit.org/framasoft/mobilizon/-/issues/1166
+    (fetchurl {
+      url = "https://framagit.org/framasoft/mobilizon/-/commit/5bce26980a4709808889cd3df340b1c234a6c1dd.patch";
+      sha256 = "sha256-dXfiYrWbeNJKo7aMlouuWAWpmy8rK08jMgOuBqOjVOw=";
+    })
+  ];
 
   nativeBuildInputs = [ git cmake ];
 
