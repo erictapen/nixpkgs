@@ -20,23 +20,15 @@ let
 in
 mixRelease rec {
   pname = "mobilizon";
-  version = "3.0.0-beta.2";
+  version = "3.0.0-beta.3";
 
   src = if srcOverride != null then srcOverride else fetchFromGitLab {
     domain = "framagit.org";
     owner = "framasoft";
     repo = pname;
     rev = version;
-    sha256 = "sha256-BCxYYestaLJYPzZSXA7K3GsAVUFdmfKNtw72VBaSiVQ=";
+    sha256 = "sha256-01mNn1PqqcEw7qt3DCeXmNLr7Cmn0WeUq37KeGt0nQE=";
   };
-
-  patches = [
-    # Fix for https://framagit.org/framasoft/mobilizon/-/issues/1166
-    (fetchurl {
-      url = "https://framagit.org/framasoft/mobilizon/-/commit/5bce26980a4709808889cd3df340b1c234a6c1dd.patch";
-      sha256 = "sha256-dXfiYrWbeNJKo7aMlouuWAWpmy8rK08jMgOuBqOjVOw=";
-    })
-  ];
 
   nativeBuildInputs = [ git cmake ];
 
@@ -162,10 +154,6 @@ mixRelease rec {
     cp -a "${js}/libexec/mobilizon/deps/priv/static" ./priv
     chmod 770 -R ./priv
     locale
-  '';
-
-  postBuild = ''
-    mix phx.digest --no-deps-check
   '';
 
   passthru = {
