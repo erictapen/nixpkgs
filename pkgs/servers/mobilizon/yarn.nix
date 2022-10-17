@@ -970,14 +970,6 @@
       };
     }
     {
-      name = "_headlessui_vue___vue_1.7.3.tgz";
-      path = fetchurl {
-        name = "_headlessui_vue___vue_1.7.3.tgz";
-        url  = "https://registry.yarnpkg.com/@headlessui/vue/-/vue-1.7.3.tgz";
-        sha512 = "Is4iakKts9u9E0+jEZNzoJpBjwq2SamwEIoEl2RlyYSu6Zco536GsPXaQEfg/o7Eyc1GUUlcL+dJd4Rt7qyf7A==";
-      };
-    }
-    {
       name = "_histoire_app___app_0.11.3.tgz";
       path = fetchurl {
         name = "_histoire_app___app_0.11.3.tgz";
@@ -2631,22 +2623,6 @@
         name = "builtin_modules___builtin_modules_3.3.0.tgz";
         url  = "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-3.3.0.tgz";
         sha512 = "zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==";
-      };
-    }
-    {
-      name = "bulma_divider___bulma_divider_0.2.0.tgz";
-      path = fetchurl {
-        name = "bulma_divider___bulma_divider_0.2.0.tgz";
-        url  = "https://registry.yarnpkg.com/bulma-divider/-/bulma-divider-0.2.0.tgz";
-        sha512 = "REe3k56GECRfDaqFjC8cwLhV4RxXmV0RubuzDJqwior9wlJcdHlN0qfW0tvUX+qphikaTQegIeRuhjRIAqkjkw==";
-      };
-    }
-    {
-      name = "bulma___bulma_0.9.4.tgz";
-      path = fetchurl {
-        name = "bulma___bulma_0.9.4.tgz";
-        url  = "https://registry.yarnpkg.com/bulma/-/bulma-0.9.4.tgz";
-        sha512 = "86FlT5+1GrsgKbPLRRY7cGDg8fsJiP/jzTqXXVqiUZZ2aZT8uemEOHlU1CDU+TxklPEZ11HZNNWclRBBecP4CQ==";
       };
     }
     {
@@ -7087,14 +7063,6 @@
         name = "vue_matomo___vue_matomo_4.2.0.tgz";
         url  = "https://registry.yarnpkg.com/vue-matomo/-/vue-matomo-4.2.0.tgz";
         sha512 = "m5hCw7LH3wPDcERaF4sp/ojR9sEx7Rl8TpOyH/4jjQxMF2DuY/q5pO+i9o5Dx+BXLSa9+IQ0qhAbWYRyESQXmA==";
-      };
-    }
-    {
-      name = "vue_meta___vue_meta_2.4.0.tgz";
-      path = fetchurl {
-        name = "vue_meta___vue_meta_2.4.0.tgz";
-        url  = "https://registry.yarnpkg.com/vue-meta/-/vue-meta-2.4.0.tgz";
-        sha512 = "XEeZUmlVeODclAjCNpWDnjgw+t3WA6gdzs6ENoIAgwO1J1d5p1tezDhtteLUFwcaQaTtayRrsx7GL6oXp/m2Jw==";
       };
     }
     {
