@@ -20,15 +20,17 @@ let
 in
 mixRelease rec {
   pname = "mobilizon";
-  version = "3.0.0-beta.3";
+  version = "3.0.0-rc.1";
 
   src = if srcOverride != null then srcOverride else fetchFromGitLab {
     domain = "framagit.org";
     owner = "framasoft";
     repo = pname;
     rev = version;
-    sha256 = "sha256-01mNn1PqqcEw7qt3DCeXmNLr7Cmn0WeUq37KeGt0nQE=";
+    sha256 = "sha256-U4sIctNRGa7jvXLqE+HORaU1lXb3qQW8K0svmtf8nrA=";
   };
+
+  compileFlags = [ "--no-validate-compile-env" ];
 
   nativeBuildInputs = [ git cmake ];
 
@@ -61,8 +63,8 @@ mixRelease rec {
         src = fetchFromGitHub {
           owner = "elixir-cldr";
           repo = "cldr";
-          rev = "v2.27.1";
-          sha256 = "sha256-XFgRIm0FiP42Af5YsHpGJDoSkDrcQ360+oK8SBix8pI=";
+          rev = "v2.33.2";
+          sha256 = "sha256-Zv4DVbwA2j0E0AX6pYHKULyH5ujt9YGfcA/pL5HW1VQ=";
         };
         postInstall = ''
           cp $src/priv/cldr/locales/* $out/lib/erlang/lib/ex_cldr-${old.version}/priv/cldr/locales/
@@ -84,6 +86,17 @@ mixRelease rec {
       geo_postgis = prev.geo_postgis.overrideAttrs (old: {
         propagatedBuildInputs = old.propagatedBuildInputs ++ [ final.ecto ];
       });
+      # phoenix = prev.phoenix.overrideAttrs (old: {
+      #   patchPhase = let
+      #     cfgFile = writeText "config.exs" ''
+      #       use Mix.Config
+      #       config :phoenix, :json_library, Jason
+      #     '';
+      #   in ''
+      #     mkdir config
+      #     cp ${cfgFile} config/config.exs
+      #   '';
+      # });
 
       # The remainder are Git dependencies (and their deps) that are not supported by mix2nix currently.
       web_push_encryption = buildMix rec {
@@ -99,50 +112,14 @@ mixRelease rec {
       };
       icalendar = buildMix rec {
         name = "icalendar";
-        version = "unstable-2021-01-15";
+        version = "unstable-2022-04-10";
         src = fetchFromGitHub {
           owner = "tcitworld";
           repo = name;
-          rev = "e16a3a0b74e07ba79044361fbf5014bed344f2da";
-          sha256 = "sha256-tazBovTLqc5U6PEjVIKnxNNTdF12uh03cSYPybrC0zw=";
+          rev = "1033d922c82a7223db0ec138e2316557b70ff49f";
+          sha256 = "sha256-N3bJZznNazLewHS4c2B7LP1lgxd1wev+EWVlQ7rOwfU=";
         };
-        beamDeps = with final; [ mix_test_watch earmark ex_doc timex ];
-      };
-      earmark = buildMix rec {
-        name = "earmark";
-        version = "1.4.10";
-        src = fetchHex {
-          pkg = name;
-          version = version;
-          sha256 = "sha256-Etv6gIEEeOUh0/+5Qa2fv8u9fevpThNBtMShskEcHCc=";
-        };
-        beamDeps = with final; [ earmark_parser ];
-      };
-      ueberauth_keycloak_strategy = buildMix rec {
-        name = "ueberauth_keycloak_strategy";
-        version = "unstable-2021-06-29";
-        src = fetchFromGitHub {
-          owner = "tcitworld";
-          repo = "ueberauth_keycloak";
-          rev = "d892f0f9daf9e0023319b69ac2f7c2c6edff2b14";
-          sha256 = "sha256-aDzAtRY7uzK8mgBfw868JglV7A9FHrKkRA9d/3+pkPY=";
-        };
-        # We skip exvcr here as it is dev-only and would require a huge amount
-        # of packages.
-        beamDeps = with final; [ oauth2 ueberauth credo earmark ex_doc ];
-      };
-      ueberauth_gitlab_strategy = buildMix rec {
-        name = "ueberauth_gitlab_strategy";
-        version = "unstable-2021-06-28";
-        src = fetchFromGitHub {
-          owner = "tcitworld";
-          repo = "ueberauth_gitlab";
-          rev = "9fc5d30b5d87ff7cdef293a1c128f25777dcbe59";
-          sha256 = "sha256-yWHlhrDvw9VHiPvKUUtuTaTZ+DUjlKSuBbkOXk7pAcs=";
-        };
-        # We skip exvcr here as it is dev-only and would require a huge amount
-        # of packages.
-        beamDeps = with final; [ oauth2 ueberauth credo earmark ex_doc ];
+        beamDeps = with final; [ mix_test_watch ex_doc timex ];
       };
     });
   };
@@ -154,6 +131,10 @@ mixRelease rec {
     cp -a "${js}/libexec/mobilizon/deps/priv/static" ./priv
     chmod 770 -R ./priv
     locale
+  '';
+
+  postBuild = ''
+    mix phx.digest --no-deps-check
   '';
 
   passthru = {
