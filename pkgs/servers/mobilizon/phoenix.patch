@@ -1,0 +1,13 @@
+diff --git a/config/config.exs b/config/config.exs
+index b28988f3..fe496d7e 100644
+--- a/config/config.exs
++++ b/config/config.exs
+@@ -188,7 +188,7 @@ config :mobilizon, Mobilizon.Service.Formatter,
+ config :tesla, adapter: Tesla.Adapter.Hackney
+ 
+ config :phoenix, :format_encoders, json: Jason, "activity-json": Jason
+-config :phoenix, :json_library, Jason
++# config :phoenix, :json_library: Jason
+ config :phoenix, :filter_parameters, ["password", "token"]
+ 
+ config :absinthe, schema: Mobilizon.GraphQL.Schema

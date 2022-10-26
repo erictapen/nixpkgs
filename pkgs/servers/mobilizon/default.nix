@@ -26,9 +26,11 @@ mixRelease rec {
     domain = "framagit.org";
     owner = "framasoft";
     repo = pname;
-    rev = version;
-    sha256 = "sha256-U4sIctNRGa7jvXLqE+HORaU1lXb3qQW8K0svmtf8nrA=";
+    rev = "3b7f0f8acf418737893a33f46cd50c57b0f1bc80";
+    sha256 = "sha256-JTHnsD37dSk9oTPFO6W0z7H1v0alax87LEGo/mQn/WI=";
   };
+
+  patches = [ ./phoenix.patch ];
 
   compileFlags = [ "--no-validate-compile-env" ];
 
