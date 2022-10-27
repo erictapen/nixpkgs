@@ -26,8 +26,8 @@ mixRelease rec {
     domain = "framagit.org";
     owner = "framasoft";
     repo = pname;
-    rev = "3b7f0f8acf418737893a33f46cd50c57b0f1bc80";
-    sha256 = "sha256-JTHnsD37dSk9oTPFO6W0z7H1v0alax87LEGo/mQn/WI=";
+    rev = "dfd809401776a3857dd12039a6b608601cb60534";
+    sha256 = "sha256-C9oJCj673QNHty8zgpQ4Kiwz4pNcW27ySqmmi/Yc6wU=";
   };
 
   patches = [ ./phoenix.patch ];
@@ -39,22 +39,22 @@ mixRelease rec {
   mixNixDeps = import ./mix.nix {
     inherit beamPackages lib;
     overrides = (final: prev: {
-      mime = prev.mime.override {
-        patchPhase = let
-          cfgFile = writeText "config.exs" ''
-            use Mix.Config
-            config :mime, :types, %{
-              "application/activity+json" => ["activity-json"],
-              "application/ld+json" => ["activity-json"],
-              "application/jrd+json" => ["jrd-json"],
-              "application/xrd+xml" => ["xrd-xml"]
-            }
-          '';
-        in ''
-          mkdir config
-          cp ${cfgFile} config/config.exs
-        '';
-      };
+      # mime = prev.mime.override {
+      #   patchPhase = let
+      #     cfgFile = writeText "config.exs" ''
+      #       import Config
+      #       config :mime, :types, %{
+      #         "application/activity+json" => ["activity-json"],
+      #         "application/ld+json" => ["activity-json"],
+      #         "application/jrd+json" => ["jrd-json"],
+      #         "application/xrd+xml" => ["xrd-xml"]
+      #       }
+      #     '';
+      #   in ''
+      #     mkdir config
+      #     cp ${cfgFile} config/config.exs
+      #   '';
+      # };
       fast_html = prev.fast_html.override {
         nativeBuildInputs = [ cmake ];
       };
@@ -65,8 +65,8 @@ mixRelease rec {
         src = fetchFromGitHub {
           owner = "elixir-cldr";
           repo = "cldr";
-          rev = "v2.33.2";
-          sha256 = "sha256-Zv4DVbwA2j0E0AX6pYHKULyH5ujt9YGfcA/pL5HW1VQ=";
+          rev = "v2.34.0";
+          sha256 = "sha256-4GyKqg1+sg+tIuU7OuG/3dCmyG8JNnNEfz5Te1kHBeg=";
         };
         postInstall = ''
           cp $src/priv/cldr/locales/* $out/lib/erlang/lib/ex_cldr-${old.version}/priv/cldr/locales/
@@ -84,6 +84,18 @@ mixRelease rec {
       ex_cldr_plugs = prev.ex_cldr_plugs.override {
         preBuild = "touch config/prod.exs";
       };
+      phoenix = prev.phoenix.override {
+        patchPhase = let
+          cfgFile = writeText "config.exs" ''
+            import Config
+            config :phoenix, :json_library, Jason
+          '';
+        in ''
+          mkdir config
+          cp ${cfgFile} config/config.exs
+          cp ${cfgFile} config/prod.exs
+        '';
+      };
       # Upstream issue: https://github.com/bryanjos/geo_postgis/pull/87
       geo_postgis = prev.geo_postgis.overrideAttrs (old: {
         propagatedBuildInputs = old.propagatedBuildInputs ++ [ final.ecto ];
@@ -91,7 +103,7 @@ mixRelease rec {
       # phoenix = prev.phoenix.overrideAttrs (old: {
       #   patchPhase = let
       #     cfgFile = writeText "config.exs" ''
-      #       use Mix.Config
+      #       import Config
       #       config :phoenix, :json_library, Jason
       #     '';
       #   in ''
@@ -133,6 +145,8 @@ mixRelease rec {
     cp -a "${js}/libexec/mobilizon/deps/priv/static" ./priv
     chmod 770 -R ./priv
     locale
+    cat config/config.exs
+    cat config/prod.exs
   '';
 
   postBuild = ''
