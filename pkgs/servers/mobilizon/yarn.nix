@@ -7122,14 +7122,6 @@
       };
     }
     {
-      name = "vuedraggable___vuedraggable_4.1.0.tgz";
-      path = fetchurl {
-        name = "vuedraggable___vuedraggable_4.1.0.tgz";
-        url  = "https://registry.yarnpkg.com/vuedraggable/-/vuedraggable-4.1.0.tgz";
-        sha512 = "FU5HCWBmsf20GpP3eudURW3WdWTKIbEIQxh9/8GE806hydR9qZqRRxRE3RjqX7PkuLuMQG/A7n3cfj9rCEchww==";
-      };
-    }
-    {
       name = "w3c_keyname___w3c_keyname_2.2.6.tgz";
       path = fetchurl {
         name = "w3c_keyname___w3c_keyname_2.2.6.tgz";
@@ -7503,6 +7495,14 @@
         name = "zen_observable___zen_observable_0.8.15.tgz";
         url  = "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.15.tgz";
         sha512 = "PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==";
+      };
+    }
+    {
+      name = "zhyswan_vuedraggable___zhyswan_vuedraggable_4.1.3.tgz";
+      path = fetchurl {
+        name = "zhyswan_vuedraggable___zhyswan_vuedraggable_4.1.3.tgz";
+        url  = "https://registry.yarnpkg.com/zhyswan-vuedraggable/-/zhyswan-vuedraggable-4.1.3.tgz";
+        sha512 = "q4Mp52tQIvTAWG0CKxLCVLyG/3RnIskDxoJvfjDZ2kM8yTcMkY80VTc8rd3q9KwqJ0UVtjEGLufb23sjDp0peQ==";
       };
     }
   ];
