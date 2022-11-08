@@ -385,6 +385,19 @@ let
       beamDeps = [ ecto slugger ];
     };
 
+    ecto_dev_logger = buildMix rec {
+      name = "ecto_dev_logger";
+      version = "0.7.0";
+
+      src = fetchHex {
+        pkg = "${name}";
+        version = "${version}";
+        sha256 = "0xv8n7nnxdk7309zhspmishbaqzd0yy893dfyrxjzd6vp27jdvvy";
+      };
+
+      beamDeps = [ ecto jason ];
+    };
+
     ecto_enum = buildMix rec {
       name = "ecto_enum";
       version = "1.4.0";
@@ -738,15 +751,15 @@ let
 
     floki = buildMix rec {
       name = "floki";
-      version = "0.33.1";
+      version = "0.34.0";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "1ihjszkd5pbgzvp1rgvchzngn2p5n6h8ag141zrzs4sz2byka426";
+        sha256 = "1769xg2sqdh6s1j06l7gi98iy35ri79xk6sq58rh1phdyi1ryflw";
       };
 
-      beamDeps = [ html_entities ];
+      beamDeps = [];
     };
 
     gen_smtp = buildRebar3 rec {
