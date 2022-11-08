@@ -1,10 +1,13 @@
-diff --git a/config/prod.exs b/config/prod.exs
-index fc98b346..1f8a48a9 100644
---- a/config/prod.exs
-+++ b/config/prod.exs
-@@ -42,3 +42,5 @@ config :mobilizon, :cldr,
-     "sv",
-     "zh_Hant"
-   ]
-+
-+config :phoenix, :json_library, Jason
+diff --git a/config/config.exs b/config/config.exs
+index 77591db8..8e4defc3 100644
+--- a/config/config.exs
++++ b/config/config.exs
+@@ -189,7 +189,7 @@ config :mobilizon, Mobilizon.Service.Formatter,
+ config :tesla, adapter: Tesla.Adapter.Hackney
+ 
+ config :phoenix, :format_encoders, json: Jason, "activity-json": Jason
+-config :phoenix, :json_library, Jason
++config :phoenix, :json_library, Poison
+ config :phoenix, :filter_parameters, ["password", "token"]
+ 
+ config :absinthe, schema: Mobilizon.GraphQL.Schema
