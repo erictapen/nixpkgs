@@ -84,33 +84,53 @@ mixRelease rec {
       ex_cldr_plugs = prev.ex_cldr_plugs.override {
         preBuild = "touch config/prod.exs";
       };
-      phoenix = prev.phoenix.override {
-        patchPhase = let
-          cfgFile = writeText "config.exs" ''
-            import Config
-            config :phoenix, :json_library, Jason
-          '';
-        in ''
-          mkdir config
-          cp ${cfgFile} config/config.exs
-          cp ${cfgFile} config/prod.exs
-        '';
-      };
       # Upstream issue: https://github.com/bryanjos/geo_postgis/pull/87
       geo_postgis = prev.geo_postgis.overrideAttrs (old: {
         propagatedBuildInputs = old.propagatedBuildInputs ++ [ final.ecto ];
       });
-      # phoenix = prev.phoenix.overrideAttrs (old: {
-      #   patchPhase = let
-      #     cfgFile = writeText "config.exs" ''
-      #       import Config
-      #       config :phoenix, :json_library, Jason
-      #     '';
-      #   in ''
-      #     mkdir config
-      #     cp ${cfgFile} config/config.exs
-      #   '';
-      # });
+      phoenix = prev.phoenix.overrideAttrs (_: {
+        postPatch = let
+          cfgFile = writeText "config.exs" ''
+            import Config
+            
+            config :logger, :console,
+              colors: [enabled: false],
+              format: "\n$time $metadata[$level] $message\n"
+            
+            config :phoenix,
+              json_library: Jason,
+              stacktrace_depth: 20,
+              trim_on_html_eex_engine: false
+            
+            if Mix.env() == :dev do
+              esbuild = fn args ->
+                [
+                  args: ~w(./js/phoenix --bundle) ++ args,
+                  cd: Path.expand("../assets", __DIR__),
+                  env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+                ]
+              end
+            
+              config :esbuild,
+                version: "0.14.41",
+                module: esbuild.(~w(--format=esm --sourcemap --outfile=../priv/static/phoenix.mjs)),
+                main: esbuild.(~w(--format=cjs --sourcemap --outfile=../priv/static/phoenix.cjs.js)),
+                cdn:
+                  esbuild.(
+                    ~w(--target=es2016 --format=iife --global-name=Phoenix --outfile=../priv/static/phoenix.js)
+                  ),
+                cdn_min:
+                  esbuild.(
+                    ~w(--target=es2016 --format=iife --global-name=Phoenix --minify --outfile=../priv/static/phoenix.min.js)
+                  )
+            end
+          '';
+        in ''
+          mkdir config
+          ln -s ${cfgFile} config/config.exs
+        '';
+        preBuild = "cat config/config.exs";
+      });
 
       # The remainder are Git dependencies (and their deps) that are not supported by mix2nix currently.
       web_push_encryption = buildMix rec {
