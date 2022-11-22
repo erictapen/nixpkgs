@@ -16,21 +16,21 @@
 }:
 
 let
-  inherit (beamPackages) mixRelease buildMix fetchHex;
+  inherit (beamPackages) mixRelease buildMix buildRebar3 fetchHex;
 in
 mixRelease rec {
   pname = "mobilizon";
-  version = "3.0.0";
+  version = "3.0.1";
 
   src = if srcOverride != null then srcOverride else fetchFromGitLab {
     domain = "framagit.org";
     owner = "framasoft";
     repo = pname;
     rev = version;
-    sha256 = "sha256-c3YE9UXGSvUQlj+DcT7iGLShyKqLHz6JLhmXlQaDa44=";
+    sha256 = "sha256-flZ54ydQT1OD2mmKOwi1oaefBoXbm4Dw+zxB6ZGi8eA=";
   };
 
-  patches = [ ./phoenix.patch ];
+  # patches = [ ./phoenix.patch ];
 
   compileFlags = [ "--no-validate-compile-env" ];
 
@@ -154,6 +154,16 @@ mixRelease rec {
           sha256 = "sha256-N3bJZznNazLewHS4c2B7LP1lgxd1wev+EWVlQ7rOwfU=";
         };
         beamDeps = with final; [ mix_test_watch ex_doc timex ];
+      };
+      erlport = buildRebar3 rec {
+        name = "erlport";
+        version = "0.10.1-compat";
+        src = fetchFromGitHub {
+          owner = "tcitworld";
+          repo = name;
+          rev = "04bcfd732fa458735001328b44e8b3a1764316a5";
+          sha256 = "sha256-VzGnhHeD5zC+HyUt41FJfLH7Q7I9fJzfcqxTv7uLKnI=";
+        };
       };
     });
   };
