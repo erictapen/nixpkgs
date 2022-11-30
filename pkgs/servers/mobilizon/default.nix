@@ -39,34 +39,35 @@ mixRelease rec {
   mixNixDeps = import ./mix.nix {
     inherit beamPackages lib;
     overrides = (final: prev: {
-      # mime = prev.mime.override {
-      #   patchPhase = let
-      #     cfgFile = writeText "config.exs" ''
-      #       import Config
-      #       config :mime, :types, %{
-      #         "application/activity+json" => ["activity-json"],
-      #         "application/ld+json" => ["activity-json"],
-      #         "application/jrd+json" => ["jrd-json"],
-      #         "application/xrd+xml" => ["xrd-xml"]
-      #       }
-      #     '';
-      #   in ''
-      #     mkdir config
-      #     cp ${cfgFile} config/config.exs
-      #   '';
-      # };
+      mime = prev.mime.override {
+        patchPhase = let
+          cfgFile = writeText "config.exs" ''
+            import Config
+            config :mime, :types, %{
+              "application/activity+json" => ["activity-json"],
+              "application/ld+json" => ["activity-json"],
+              "application/jrd+json" => ["jrd-json"],
+              "application/xrd+xml" => ["xrd-xml"]
+            }
+          '';
+        in ''
+          mkdir config
+          cp ${cfgFile} config/config.exs
+        '';
+      };
       fast_html = prev.fast_html.override {
         nativeBuildInputs = [ cmake ];
       };
       ex_cldr = prev.ex_cldr.overrideAttrs (old: {
+        version = "2.30.0";
         preBuild = "touch config/prod.exs";
         # We have to use the GitHub sources, as it otherwise tries to download
         # the locales at build time.
         src = fetchFromGitHub {
           owner = "elixir-cldr";
           repo = "cldr";
-          rev = "v2.34.0";
-          sha256 = "sha256-4GyKqg1+sg+tIuU7OuG/3dCmyG8JNnNEfz5Te1kHBeg=";
+          rev = "v2.30.0";
+          sha256 = "sha256-YOGNaYWcqZTqWchSTAk1J7Y8mlHrQ2WTwcL5wHyXtNg=";
         };
         postInstall = ''
           cp $src/priv/cldr/locales/* $out/lib/erlang/lib/ex_cldr-${old.version}/priv/cldr/locales/
@@ -87,49 +88,6 @@ mixRelease rec {
       # Upstream issue: https://github.com/bryanjos/geo_postgis/pull/87
       geo_postgis = prev.geo_postgis.overrideAttrs (old: {
         propagatedBuildInputs = old.propagatedBuildInputs ++ [ final.ecto ];
-      });
-      phoenix = prev.phoenix.overrideAttrs (_: {
-        postPatch = let
-          cfgFile = writeText "config.exs" ''
-            import Config
-            
-            config :logger, :console,
-              colors: [enabled: false],
-              format: "\n$time $metadata[$level] $message\n"
-            
-            config :phoenix,
-              json_library: Jason,
-              stacktrace_depth: 20,
-              trim_on_html_eex_engine: false
-            
-            if Mix.env() == :dev do
-              esbuild = fn args ->
-                [
-                  args: ~w(./js/phoenix --bundle) ++ args,
-                  cd: Path.expand("../assets", __DIR__),
-                  env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
-                ]
-              end
-            
-              config :esbuild,
-                version: "0.14.41",
-                module: esbuild.(~w(--format=esm --sourcemap --outfile=../priv/static/phoenix.mjs)),
-                main: esbuild.(~w(--format=cjs --sourcemap --outfile=../priv/static/phoenix.cjs.js)),
-                cdn:
-                  esbuild.(
-                    ~w(--target=es2016 --format=iife --global-name=Phoenix --outfile=../priv/static/phoenix.js)
-                  ),
-                cdn_min:
-                  esbuild.(
-                    ~w(--target=es2016 --format=iife --global-name=Phoenix --minify --outfile=../priv/static/phoenix.min.js)
-                  )
-            end
-          '';
-        in ''
-          mkdir config
-          ln -s ${cfgFile} config/config.exs
-        '';
-        preBuild = "cat config/config.exs";
       });
 
       # The remainder are Git dependencies (and their deps) that are not supported by mix2nix currently.
@@ -165,6 +123,7 @@ mixRelease rec {
           sha256 = "sha256-VzGnhHeD5zC+HyUt41FJfLH7Q7I9fJzfcqxTv7uLKnI=";
         };
       };
+
     });
   };
 
