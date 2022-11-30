@@ -59,15 +59,15 @@ mixRelease rec {
         nativeBuildInputs = [ cmake ];
       };
       ex_cldr = prev.ex_cldr.overrideAttrs (old: {
-        version = "2.30.0";
+        version = "2.34.0";
         preBuild = "touch config/prod.exs";
         # We have to use the GitHub sources, as it otherwise tries to download
         # the locales at build time.
         src = fetchFromGitHub {
-          owner = "elixir-cldr";
+          owner = "erictapen";
           repo = "cldr";
-          rev = "v2.30.0";
-          sha256 = "sha256-YOGNaYWcqZTqWchSTAk1J7Y8mlHrQ2WTwcL5wHyXtNg=";
+          rev = "98c2675d5357373b3992bbd98d06524aa0524dc8";
+          sha256 = "sha256-9DC2QpuS1Cu4YgtDEnZ6iOX4UDfMNCMJgq4Dc6/vPO4=";
         };
         postInstall = ''
           cp $src/priv/cldr/locales/* $out/lib/erlang/lib/ex_cldr-${old.version}/priv/cldr/locales/
