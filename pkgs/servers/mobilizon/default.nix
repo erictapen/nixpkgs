@@ -127,15 +127,16 @@ mixRelease rec {
     });
   };
 
+  preConfigure = ''
+    export LANG=C.UTF-8 # fix elixir locale warning
+  '';
+
   # Install the compiled js part
   preBuild = let
     js = callPackage ./js.nix { mobilizon-src = src; };
   in ''
     cp -a "${js}/libexec/mobilizon/deps/priv/static" ./priv
     chmod 770 -R ./priv
-    locale
-    cat config/config.exs
-    cat config/prod.exs
   '';
 
   postBuild = ''
