@@ -1,5 +1,5 @@
 { lib
-, beamPackages
+, beam
 , callPackage
 , writeShellScriptBin
 , writeText
@@ -16,6 +16,9 @@
 }:
 
 let
+  beamPackages = beam.packages.erlangR25.extend (self: super: {
+    elixir = super.elixir_1_14;
+  });
   inherit (beamPackages) mixRelease buildMix buildRebar3 fetchHex;
 in
 mixRelease rec {
