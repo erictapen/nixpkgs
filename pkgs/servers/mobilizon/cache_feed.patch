@@ -1,0 +1,13 @@
+diff --git a/lib/mobilizon.ex b/lib/mobilizon.ex
+index 999e315d..b2bc59be 100644
+--- a/lib/mobilizon.ex
++++ b/lib/mobilizon.ex
+@@ -48,7 +48,7 @@ defmodule Mobilizon do
+         Guardian.DB.Token.SweeperServer,
+         ActivityPub.Federator,
+         TzWorld.Backend.DetsWithIndexCache,
+-        cachex_spec(:feed, 2500, 60, 60, &Feed.create_cache/1),
++        # cachex_spec(:feed, 2500, 60, 60, &Feed.create_cache/1),
+         cachex_spec(:ics, 2500, 60, 60, &ICalendar.create_cache/1),
+         cachex_spec(
+           :actor_key_rotation,

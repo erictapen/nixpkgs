@@ -33,7 +33,9 @@ mixRelease rec {
     sha256 = "sha256-flZ54ydQT1OD2mmKOwi1oaefBoXbm4Dw+zxB6ZGi8eA=";
   };
 
-  # patches = [ ./phoenix.patch ];
+  patches = [
+    ./cache_feed.patch
+  ];
 
   compileFlags = [ "--no-validate-compile-env" ];
 
