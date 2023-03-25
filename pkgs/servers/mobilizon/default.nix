@@ -23,14 +23,14 @@ let
 in
 mixRelease rec {
   pname = "mobilizon";
-  version = "3.0.3";
+  version = "3.0.4";
 
   src = if srcOverride != null then srcOverride else fetchFromGitLab {
     domain = "framagit.org";
     owner = "framasoft";
     repo = pname;
     rev = version;
-    sha256 = "sha256-Alf8Jssif55+dgjXujYV/4wK6rCkoC9QM/RZkDSshFM=";
+    sha256 = "sha256-U7+xwWKyPdJVcpGbBOAuWUTKLsLesBKzPfy8gqySxh0=";
   };
 
   patches = [
