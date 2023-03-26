@@ -671,6 +671,19 @@ let
       beamDeps = [];
     };
 
+    expo = buildMix rec {
+      name = "expo";
+      version = "0.4.0";
+
+      src = fetchHex {
+        pkg = "${name}";
+        version = "${version}";
+        sha256 = "1wmbycv8mdfngxnn3c3bi8b3kx9md4n1p96p7yjpyz4bxj1idvd8";
+      };
+
+      beamDeps = [];
+    };
+
     export = buildMix rec {
       name = "export";
       version = "0.1.1";
@@ -829,15 +842,15 @@ let
 
     gettext = buildMix rec {
       name = "gettext";
-      version = "0.20.0";
+      version = "0.22.1";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "0ggb458h60ch3inndqp9xhbailhb0jkq3xnp85sa94sy8dvv20qw";
+        sha256 = "0pdcj2hmf9jgv40w3594lqksvbp9fnx98g8d1kwy73k6mf6mn45d";
       };
 
-      beamDeps = [];
+      beamDeps = [ expo ];
     };
 
     guardian = buildMix rec {
@@ -1700,12 +1713,12 @@ let
 
     timex = buildMix rec {
       name = "timex";
-      version = "3.7.9";
+      version = "3.7.11";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "1q8chs28k5my6nzzm61rhc2l9wkhzfn0kiqzf87i71xvwn11asb4";
+        sha256 = "1anijimbrb3ngdy6fdspr8c9hz6dip7nakx0gayzkfmsxzvj944b";
       };
 
       beamDeps = [ combine gettext tzdata ];
