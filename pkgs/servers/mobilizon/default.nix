@@ -36,6 +36,8 @@ mixRelease rec {
   patches = [
     # ./cache_feed.patch
     ./timex.patch
+    ./expo.patch
+    ./deps.patch
   ];
 
   compileFlags = [ "--no-validate-compile-env" ];
