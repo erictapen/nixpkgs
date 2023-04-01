@@ -35,8 +35,6 @@ mixRelease rec {
 
   patches = [
     # ./cache_feed.patch
-    ./timex.patch
-    ./expo.patch
     ./deps.patch
   ];
 
@@ -62,15 +60,6 @@ mixRelease rec {
           mkdir config
           cp ${cfgFile} config/config.exs
         '';
-      };
-      # https://github.com/elixir-gettext/expo/pull/109
-      expo = prev.expo.override {
-        src = fetchFromGitHub {
-          owner = "elixir-gettext";
-          repo = "expo";
-          rev = "f70ed88a225f2b7f6c81235c7dd4f38f74d248a5";
-          sha256 = "sha256-3BBEg71LMOrWoxEvMGepjWf+iHMrMSzLLJ+PfD36Y0Y=";
-        };
       };
       fast_html = prev.fast_html.override {
         nativeBuildInputs = [ cmake ];
