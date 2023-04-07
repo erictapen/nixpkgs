@@ -10,18 +10,18 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "crate2nix";
-  version = "0.11.0-rc.4";
+  version = "0.11.0-master";
 
   src = fetchFromGitHub {
     owner = "kolloch";
     repo = pname;
-    rev = version;
-    sha256 = "sha256-GRXZBi54jyn+6rRZos0IBqCBTddMPkkt8A2VXWgYCFo=";
+    rev = "a463923ade197f616876e4068efe15230b92f96f";
+    sha256 = "sha256-8NcBU6oIKhVvP9DdDu4f5FHN4CanQjvSSfWv683eMFs=";
   };
 
   sourceRoot = "source/crate2nix";
 
-  cargoSha256 = "sha256-GKlRUN9VCMIM+E9+gkE48YeEUkSg+kZC5T0hq1EHrVY=";
+  cargoSha256 = "sha256-PtDYrsR3h8izGLFPBz6Ee22dddPG2A4mUX3R3tNrXVU=";
 
   nativeBuildInputs = [ makeWrapper ];
 
