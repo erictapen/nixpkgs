@@ -53,7 +53,6 @@ let
       runHook preBuild
       export HEX_HOME="$TEMPDIR/hex"
       export MIX_HOME="$TEMPDIR/mix"
-      mix compile.leex
       mix compile --no-deps-check --no-validate-compile-env
       runHook postBuild
     '';

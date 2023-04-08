@@ -491,15 +491,15 @@ let
 
     ex_cldr = buildMix rec {
       name = "ex_cldr";
-      version = "2.36.0";
+      version = "2.34.0";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "1s9zvsj7i2ij6phsxqn739w9p5c72p6jia5sfwif9g8ysrnccmjs";
+        sha256 = "12150ymndggazavrbd3276kf04iwip9qz40dmy6sn904b1yxy9nh";
       };
 
-      beamDeps = [ cldr_utils decimal gettext jason nimble_parsec ];
+      beamDeps = [ castore certifi cldr_utils decimal gettext jason nimble_parsec ];
     };
 
     ex_cldr_calendars = buildMix rec {
@@ -517,12 +517,12 @@ let
 
     ex_cldr_currencies = buildMix rec {
       name = "ex_cldr_currencies";
-      version = "2.15.0";
+      version = "2.14.2";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "1y3g1q0g7ygcajqzqh9kb1y3kchbarkrf89nssi7fs66jrik2885";
+        sha256 = "1lbc8vhmxgm5vr7m07hgxq5axxf014iavzn2xlfppjfd0cqm6w69";
       };
 
       beamDeps = [ ex_cldr jason ];
@@ -556,12 +556,12 @@ let
 
     ex_cldr_numbers = buildMix rec {
       name = "ex_cldr_numbers";
-      version = "2.30.1";
+      version = "2.28.0";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "16lkhmx7yirnlbmmg9h5ckfqxf68alvnaadnr1r9wn2sb4yvd0ca";
+        sha256 = "1lj93k6lazgqln04iccncmxk348gvbhqq12bqnjkmpxfd3v2yd43";
       };
 
       beamDeps = [ decimal digital_token ex_cldr ex_cldr_currencies jason ];
