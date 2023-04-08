@@ -88,12 +88,12 @@ let
 
     cachex = buildMix rec {
       name = "cachex";
-      version = "3.4.0";
+      version = "3.6.0";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "1rfbbij81zmk6p75z33wg04mfcjqsxzzh67vclllvfjgmfqj609p";
+        sha256 = "1qp2r1f4hvpybhgi547p33ci7bh2w6xn6jl9il68xg4370vlxwpb";
       };
 
       beamDeps = [ eternal jumper sleeplocks unsafe ];
