@@ -33,13 +33,6 @@ mixRelease rec {
     sha256 = "sha256-U7+xwWKyPdJVcpGbBOAuWUTKLsLesBKzPfy8gqySxh0=";
   };
 
-  patches = [
-    # ./cache_feed.patch
-    ./timex.patch
-    ./expo.patch
-    ./deps.patch
-  ];
-
   # See https://github.com/whitfin/cachex/issues/205
   # This circumvents a startup error for now
   stripDebug = false;
