@@ -12,6 +12,8 @@
 , meta ? { }
 , enableDebugInfo ? false
 , mixEnv ? "prod"
+# A config directory that is considered for all the dependencies of an app, typically in $src/config/
+, appConfigPath ? null
 , ...
 }@attrs:
 
@@ -45,6 +47,14 @@ let
       runHook preConfigure
 
       ${./mix-configure-hook.sh}
+      ${if isNull appConfigPath then "" else
+      # Due to https://hexdocs.pm/elixir/main/Config.html the config directory
+      # of a library seems to be not considered, as config is always
+      # application specific. So we can safely delete it.
+      ''
+        rm -rf config
+        cp -r ${appConfigPath} config
+      ''}
 
       runHook postConfigure
     '';
