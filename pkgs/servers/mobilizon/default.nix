@@ -46,23 +46,10 @@ mixRelease rec {
 
   mixNixDeps = import ./mix.nix {
     inherit beamPackages lib;
-    overrides = (final: prev: {
-      mime = prev.mime.override {
-        patchPhase = let
-          cfgFile = writeText "config.exs" ''
-            import Config
-            config :mime, :types, %{
-              "application/activity+json" => ["activity-json"],
-              "application/ld+json" => ["activity-json"],
-              "application/jrd+json" => ["jrd-json"],
-              "application/xrd+xml" => ["xrd-xml"]
-            }
-          '';
-        in ''
-          mkdir config
-          cp ${cfgFile} config/config.exs
-        '';
-      };
+    overrides = (final: prev:
+     (lib.mapAttrs (_: value: value.override {
+       appConfigPath = src + "/config";
+     }) prev) // {
       fast_html = prev.fast_html.override {
         nativeBuildInputs = [ cmake ];
       };
