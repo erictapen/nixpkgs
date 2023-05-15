@@ -40,6 +40,10 @@ mixRelease rec {
     ./deps.patch
   ];
 
+  # See https://github.com/whitfin/cachex/issues/205
+  # This circumvents a startup error for now
+  stripDebug = false;
+
   compileFlags = [ "--no-validate-compile-env" ];
 
   nativeBuildInputs = [ git cmake ];
