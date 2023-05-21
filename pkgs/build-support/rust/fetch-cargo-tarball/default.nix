@@ -24,6 +24,7 @@ in
 , sourceRoot ? ""
 , cargoUpdateHook ? ""
 , nativeBuildInputs ? []
+, extraCargoVendorArgs ? ""
 , ...
 } @ args:
 
@@ -91,7 +92,7 @@ in stdenv.mkDerivation ({
         exit 1
     fi
 
-    cargo vendor $name --respect-source-config | cargo-vendor-normalise > $CARGO_CONFIG
+    cargo vendor $name ${extraCargoVendorArgs} --respect-source-config | cargo-vendor-normalise > $CARGO_CONFIG
 
     # Create an empty vendor directory when there is no dependency to vendor
     mkdir -p $name

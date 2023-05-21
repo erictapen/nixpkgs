@@ -1,40 +1,53 @@
 { lib
 , fetchFromGitHub
 , rust
+, rustPlatform
 , llvmPackages_xtensa
 , python3
 }: {
 
   packages.stable = rec {
     rustc = (rust.override {
-      llvm_15 = llvmPackages_xtensa.libllvm;
+      llvm_15 = llvmPackages_xtensa.libllvm.override {
+        doCheck = false;
+      };
     }).packages.stable.rustc.overrideAttrs (old: rec {
       pname = "rustc-xtensa";
-      version = "1.56.1";
+      version = "1.69.0.1";
       src = fetchFromGitHub {
         owner = "esp-rs";
         repo = "rust";
-        # latest esp-1.56.1
-        rev = "6ed7fe3880ed97b406ea80021f3c7aad4a35abff";
-        sha256 = "sha256-PPXqNI/6tsQMDIxsul0q5BoRbDBPYFY7l/35ZhTwiuU=";
+        # latest esp-1.69.0.1 branch
+        rev = "4896f6b455b005c410fb7ef87a2f96bf5b1b73cb";
+        sha256 = "sha256-RIZ4ZEHQxLXkY+BJc+f4RYKiwgDeUL84cIiZ9VE3mj0=";
         fetchSubmodules = true;
       };
-      configureFlags = old.configureFlags
-        ++ [ "--set=build.rustfmt=${rust.packages.stable.rustfmt}/bin/rustfmt" ];
+      # configureFlags = old.configureFlags
+      #   ++ [ "--set=build.rustfmt=${rust.packages.stable.rustfmt}/bin/rustfmt" ];
+      prePatch = ''
+        if [ -d .cargo ]; then
+          echo ".cargo exists"
+        fi
+        echo ".cargo/config"
+        cat .cargo/config
+      '';
+      # TODO replace this with something custom? Apparently rustc isn't really made for using fetchCargoTarball
       cargoDeps = rust.packages.stable.rustPlatform.fetchCargoTarball {
         inherit pname;
         inherit src;
         sourceRoot = null;
         srcs = null;
         patches = [ ];
-        sha256 = "sha256-3cGjS6AX3ci3VKi3jzGHF7UDaTbNJ8N7+h/8iEuvNCw=";
+        extraCargoVendorArgs = "--sync ./src/tools/rust-analyzer/Cargo.toml --sync ./compiler/rustc_codegen_cranelift/Cargo.toml --sync ./src/bootstrap/Cargo.toml";
+        sha256 = "sha256-jPqlL3Z5XwZd5iEuettGvkNreXR2bQ0/EiAxtTr6riA=";
         nativeBuildInputs = [ python3 ];
       };
-      postConfigure = ''
-        ${old.postConfigure}
-        unpackFile "$cargoDeps"
-        mv $(stripHash $cargoDeps) vendor
-      '';
+      nativeBuildInputs = old.nativeBuildInputs ++ [ rustPlatform.cargoSetupHook ];
+      # postConfigure = ''
+      #   ${old.postConfigure}
+      #   unpackFile "$cargoDeps"
+      #   mv $(stripHash $cargoDeps) vendor
+      # '';
       meta.maintainers = [ lib.maintainers.erictapen ];
     });
 
@@ -42,7 +55,6 @@
       inherit rustc;
     }).overrideAttrs (old: rec {
       pname = "cargo-xtensa";
-      version = "1.56.1";
       inherit (rustc) cargoDeps;
       postConfigure = ''
         ${old.postConfigure or ""}
