@@ -25,11 +25,8 @@
       # configureFlags = old.configureFlags
       #   ++ [ "--set=build.rustfmt=${rust.packages.stable.rustfmt}/bin/rustfmt" ];
       prePatch = ''
-        if [ -d .cargo ]; then
-          echo ".cargo exists"
-        fi
-        echo ".cargo/config"
-        cat .cargo/config
+        cp -r ../.cargo .cargo
+        ln -s $cargoDepsCopy vendor
       '';
       # TODO replace this with something custom? Apparently rustc isn't really made for using fetchCargoTarball
       cargoDeps = rust.packages.stable.rustPlatform.fetchCargoTarball {
