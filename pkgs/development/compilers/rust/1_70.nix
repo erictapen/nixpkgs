@@ -20,8 +20,8 @@
 } @ args:
 
 import ./default.nix {
-  rustcVersion = "1.69.0";
-  rustcSha256 = "sha256-+wWXGGetbMq703ICefWpS5n2ECSSMYe1a7XEVfo89g8=";
+  rustcVersion = "1.70.0";
+  rustcSha256 = "sha256-sr+uAAt6UEDk7Eu8UKCfIVSBkMt1cLDtdzWDaEE70nw=";
 
   llvmSharedForBuild = pkgsBuildBuild.llvmPackages_16.libllvm.override { enableSharedLibraries = true; };
   llvmSharedForHost = pkgsBuildHost.llvmPackages_16.libllvm.override { enableSharedLibraries = true; };
@@ -55,7 +55,7 @@ import ./default.nix {
     mips64el-unknown-linux-gnuabi64 = "c4bf3043451d6122a3845db825cbe35b5ca61a44659a00004f6cca1299ad9d72";
   };
 
-  selectRustPackage = pkgs: pkgs.rust_1_69;
+  selectRustPackage = pkgs: pkgs.rust_1_70;
 
   rustcPatches = [ ];
 }
