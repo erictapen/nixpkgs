@@ -13,17 +13,24 @@
       };
     }).packages.stable.rustc.overrideAttrs (old: rec {
       pname = "rustc-xtensa";
-      version = "1.69.0.1";
+      version = "1.70.0.1";
       src = fetchFromGitHub {
         owner = "esp-rs";
         repo = "rust";
         # latest esp-1.69.0.1 branch
-        rev = "4896f6b455b005c410fb7ef87a2f96bf5b1b73cb";
-        sha256 = "sha256-RIZ4ZEHQxLXkY+BJc+f4RYKiwgDeUL84cIiZ9VE3mj0=";
+        rev = "f112def2207779c024b9ad42099077bb5c4c8998";
+        sha256 = "sha256-2iiJzNK6h/WAOnMlm5gaukGoILOLzpCWp2ZJj1Vfq3U=";
         fetchSubmodules = true;
       };
-      # configureFlags = old.configureFlags
-      #   ++ [ "--set=build.rustfmt=${rust.packages.stable.rustfmt}/bin/rustfmt" ];
+      configureFlags = old.configureFlags
+        ++ [
+          "--experimental-targets=Xtensa"
+          # "--release-channel=nightly"
+          "--enable-extended"
+          "--tools=clippy,cargo,rustfmt"
+          "--enable-lld"
+        ];
+
       prePatch = ''
         cp -r ../.cargo .cargo
         ln -s $cargoDepsCopy vendor
@@ -36,7 +43,7 @@
         srcs = null;
         patches = [ ];
         extraCargoVendorArgs = "--sync ./src/tools/rust-analyzer/Cargo.toml --sync ./compiler/rustc_codegen_cranelift/Cargo.toml --sync ./src/bootstrap/Cargo.toml";
-        sha256 = "sha256-jPqlL3Z5XwZd5iEuettGvkNreXR2bQ0/EiAxtTr6riA=";
+        sha256 = "sha256-oBFrgOB6PLvvCEWHbLZKSLMz3TQ58u/3jzKklUr6g3Q=";
         nativeBuildInputs = [ python3 ];
       };
       nativeBuildInputs = old.nativeBuildInputs ++ [ rustPlatform.cargoSetupHook ];
