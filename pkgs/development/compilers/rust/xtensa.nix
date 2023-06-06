@@ -17,7 +17,7 @@
       src = fetchFromGitHub {
         owner = "esp-rs";
         repo = "rust";
-        # latest esp-1.69.0.1 branch
+        # latest esp-1.70.0.1 branch
         rev = "f112def2207779c024b9ad42099077bb5c4c8998";
         sha256 = "sha256-2iiJzNK6h/WAOnMlm5gaukGoILOLzpCWp2ZJj1Vfq3U=";
         fetchSubmodules = true;
@@ -25,7 +25,7 @@
       configureFlags = old.configureFlags
         ++ [
           "--experimental-targets=Xtensa"
-          # "--release-channel=nightly"
+          "--release-channel=nightly"
           "--enable-extended"
           "--tools=clippy,cargo,rustfmt"
           "--enable-lld"
