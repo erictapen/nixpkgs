@@ -1,5 +1,6 @@
 { lib
 , fetchFromGitHub
+, formats
 , rust
 , rustPlatform
 , llvmPackages_xtensa
@@ -8,7 +9,7 @@
 
   packages.stable = rec {
     rustc = (rust.override {
-      llvm_15 = llvmPackages_xtensa.libllvm.override {
+      llvm_16 = llvmPackages_xtensa.libllvm.override {
         doCheck = false;
       };
     }).packages.stable.rustc.overrideAttrs (old: rec {
