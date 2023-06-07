@@ -16379,7 +16379,7 @@ with pkgs;
   rust = rust_1_70;
 
   rust-xtensa = callPackage ../development/compilers/rust/xtensa.nix {
-    rust = rust_1_69;
+    rust = rust_1_70;
   };
 
   mrustc = callPackage ../development/compilers/mrustc { };
