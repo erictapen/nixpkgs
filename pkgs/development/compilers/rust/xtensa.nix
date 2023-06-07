@@ -26,10 +26,10 @@
       configureFlags = old.configureFlags
         ++ [
           "--experimental-targets=Xtensa"
-          "--release-channel=nightly"
+          # "--release-channel=nightly"
           "--enable-extended"
           "--tools=clippy,cargo,rustfmt"
-          "--enable-lld"
+          # "--enable-lld"
         ];
 
       prePatch = ''
