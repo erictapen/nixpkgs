@@ -1,5 +1,6 @@
 { lib
 , fetchFromGitHub
+, fetchpatch
 , formats
 , rust
 , rustPlatform
@@ -19,10 +20,16 @@
         owner = "esp-rs";
         repo = "rust";
         # latest esp-1.70.0.1 branch
-        rev = "f112def2207779c024b9ad42099077bb5c4c8998";
-        sha256 = "sha256-2iiJzNK6h/WAOnMlm5gaukGoILOLzpCWp2ZJj1Vfq3U=";
+        rev = "ed3726ba7aea45731260ec8f75f05fc60c2b0f22";
+        sha256 = "sha256-aUGbMEhYBWFXS/FVzesIhhwuRBgHTRpYt3LE4mg3aBo=";
         fetchSubmodules = true;
       };
+      patches = [
+        (fetchpatch {
+          url = "https://github.com/rust-lang/rust/pull/113733/commits/8fcca0425dccae8a1d7e656729016e4aef7e84cb.patch";
+          sha256 = "sha256-4s0xN7Fbb2YxnaDxKNBpVzQjh3b4rhG6R35vKRMN4lE=";
+        })
+      ];
       configureFlags = old.configureFlags
         ++ [
           "--experimental-targets=Xtensa"
