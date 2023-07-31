@@ -10,9 +10,7 @@
 
   packages.stable = rec {
     rustc = (rust.override {
-      llvm_16 = llvmPackages_xtensa.libllvm.override {
-        doCheck = false;
-      };
+      llvm_16 = llvmPackages_xtensa.libllvm;
     }).packages.stable.rustc.overrideAttrs (old: rec {
       pname = "rustc-xtensa";
       version = "1.70.0.1";
