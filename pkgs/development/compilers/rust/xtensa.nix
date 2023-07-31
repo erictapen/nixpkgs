@@ -1,4 +1,7 @@
 { lib
+, pkgsBuildTarget
+, pkgsBuildBuild
+, pkgsBuildHost
 , fetchFromGitHub
 , fetchpatch
 , formats
@@ -11,6 +14,9 @@
   packages.stable = rec {
     rustc = (rust.override {
       llvm_16 = llvmPackages_xtensa.libllvm;
+      pkgsBuildTarget = pkgsBuildTarget // { llvmPackages_16 = pkgsBuildTarget.llvmPackages_xtensa; };
+      pkgsBuildBuild = pkgsBuildBuild // { llvmPackages_16 = pkgsBuildBuild.llvmPackages_xtensa; };
+      pkgsBuildHost = pkgsBuildHost // { llvmPackages_16 = pkgsBuildHost.llvmPackages_xtensa; };
     }).packages.stable.rustc.overrideAttrs (old: rec {
       pname = "rustc-xtensa";
       version = "1.70.0.1";
@@ -58,7 +64,7 @@
       #   unpackFile "$cargoDeps"
       #   mv $(stripHash $cargoDeps) vendor
       # '';
-      meta.maintainers = [ lib.maintainers.erictapen ];
+      meta.maintainers = with lib.maintainers; [ erictapen ];
     });
 
     cargo = (rust.packages.stable.cargo.override {
