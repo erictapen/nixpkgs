@@ -23,14 +23,14 @@ let
 in
 mixRelease rec {
   pname = "mobilizon";
-  version = "3.0.4";
+  version = "3.1.3";
 
   src = if srcOverride != null then srcOverride else fetchFromGitLab {
     domain = "framagit.org";
     owner = "framasoft";
     repo = pname;
     rev = version;
-    sha256 = "sha256-U7+xwWKyPdJVcpGbBOAuWUTKLsLesBKzPfy8gqySxh0=";
+    sha256 = "sha256-vYn8wE3cwOH3VssPDKKWAV9ZLKMSGg6XVWFZzJ9HSw0=";
   };
 
   # See https://github.com/whitfin/cachex/issues/205
@@ -51,15 +51,15 @@ mixRelease rec {
         nativeBuildInputs = [ cmake ];
       };
       ex_cldr = prev.ex_cldr.overrideAttrs (old: {
-        version = "2.34.0";
         preBuild = "touch config/prod.exs";
         # We have to use the GitHub sources, as it otherwise tries to download
         # the locales at build time.
         src = fetchFromGitHub {
           owner = "erictapen";
           repo = "cldr";
-          rev = "98c2675d5357373b3992bbd98d06524aa0524dc8";
-          sha256 = "sha256-9DC2QpuS1Cu4YgtDEnZ6iOX4UDfMNCMJgq4Dc6/vPO4=";
+          # tip of 2.37.1/compile_env-fix
+          rev = "3a0dcf91132542a739f7b2450c6df12d40edeb0a";
+          sha256 = "sha256-QQRt1HOuajCANbKxikdgN3oK9BdZJjg1qg+WHm4DuqY=";
         };
         postInstall = ''
           cp $src/priv/cldr/locales/* $out/lib/erlang/lib/ex_cldr-${old.version}/priv/cldr/locales/
@@ -111,9 +111,31 @@ mixRelease rec {
         src = fetchFromGitHub {
           owner = "tcitworld";
           repo = name;
-          rev = "04bcfd732fa458735001328b44e8b3a1764316a5";
-          sha256 = "sha256-VzGnhHeD5zC+HyUt41FJfLH7Q7I9fJzfcqxTv7uLKnI=";
+          rev = "1f8f4b1a50ecdf7e959090fb566ac45c63c39b0b";
+          sha256 = "sha256-NkoGAW+1MTL0p7uUHl89GcQsbcfyAg/sMr417jUWMNM=";
         };
+      };
+      exkismet = buildMix rec {
+        name = "exkismet";
+        version = "0.0.1";
+        src = fetchFromGitHub {
+          owner = "tcitworld";
+          repo = name;
+          rev = "8b5485fde00fafbde20f315bec387a77f7358334";
+          sha256 = "sha256-ttgCWoBKU7VTjZJBhZNtqVF4kN7psBr/qOeR65MbTqw=";
+        };
+        beamDeps = with final; [ httpoison ];
+      };
+      rajska = buildMix rec {
+        name = "rajska";
+        version = "0.0.1";
+        src = fetchFromGitHub {
+          owner = "tcitworld";
+          repo = name;
+          rev = "0c036448e261e8be6a512581c592fadf48982d84";
+          sha256 = "sha256-4pfply1vTAIT2Xvm3kONmrCK05xKfXFvcb8EKoSCXBE=";
+        };
+        beamDeps = with final; [ httpoison absinthe ];
       };
 
     });
