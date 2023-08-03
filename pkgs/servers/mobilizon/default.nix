@@ -8,6 +8,7 @@
 , fetchFromGitLab
 , fetchFromGitHub
 , fetchgit
+, fetchurl
 , git
 , cmake
 , nixosTests
@@ -16,43 +17,36 @@
 
 let
   beamPackages = beam.packages.erlangR25.extend (self: super: {
-    elixir = super.elixir_1_12;
+    elixir = super.elixir_1_14;
   });
-  inherit (beamPackages) mixRelease buildMix fetchHex;
+  inherit (beamPackages) mixRelease buildMix buildRebar3 fetchHex;
 in
 mixRelease rec {
   pname = "mobilizon";
-  version = "2.1.0";
+  version = "3.1.3";
 
   src = if srcOverride != null then srcOverride else fetchFromGitLab {
     domain = "framagit.org";
     owner = "framasoft";
     repo = pname;
     rev = version;
-    sha256 = "sha256-8i+KKC+ycnfBmVJ1snXtK+57xjBETQzTRw7uzJv8PKY=";
+    sha256 = "sha256-vYn8wE3cwOH3VssPDKKWAV9ZLKMSGg6XVWFZzJ9HSw0=";
   };
+
+  # See https://github.com/whitfin/cachex/issues/205
+  # This circumvents a startup error for now
+  stripDebug = false;
+
+  compileFlags = [ "--no-validate-compile-env" ];
 
   nativeBuildInputs = [ git cmake ];
 
   mixNixDeps = import ./mix.nix {
     inherit beamPackages lib;
-    overrides = (final: prev: {
-      mime = prev.mime.override {
-        patchPhase = let
-          cfgFile = writeText "config.exs" ''
-            use Mix.Config
-            config :mime, :types, %{
-              "application/activity+json" => ["activity-json"],
-              "application/ld+json" => ["activity-json"],
-              "application/jrd+json" => ["jrd-json"],
-              "application/xrd+xml" => ["xrd-xml"]
-            }
-          '';
-        in ''
-          mkdir config
-          cp ${cfgFile} config/config.exs
-        '';
-      };
+    overrides = (final: prev:
+     (lib.mapAttrs (_: value: value.override {
+       appConfigPath = src + "/config";
+     }) prev) // {
       fast_html = prev.fast_html.override {
         nativeBuildInputs = [ cmake ];
       };
@@ -61,10 +55,11 @@ mixRelease rec {
         # We have to use the GitHub sources, as it otherwise tries to download
         # the locales at build time.
         src = fetchFromGitHub {
-          owner = "elixir-cldr";
+          owner = "erictapen";
           repo = "cldr";
-          rev = "v2.27.1";
-          sha256 = "sha256-XFgRIm0FiP42Af5YsHpGJDoSkDrcQ360+oK8SBix8pI=";
+          # tip of 2.37.1/compile_env-fix
+          rev = "3a0dcf91132542a739f7b2450c6df12d40edeb0a";
+          sha256 = "sha256-QQRt1HOuajCANbKxikdgN3oK9BdZJjg1qg+WHm4DuqY=";
         };
         postInstall = ''
           cp $src/priv/cldr/locales/* $out/lib/erlang/lib/ex_cldr-${old.version}/priv/cldr/locales/
@@ -101,64 +96,72 @@ mixRelease rec {
       };
       icalendar = buildMix rec {
         name = "icalendar";
-        version = "unstable-2021-01-15";
+        version = "unstable-2022-04-10";
         src = fetchFromGitHub {
           owner = "tcitworld";
           repo = name;
-          rev = "e16a3a0b74e07ba79044361fbf5014bed344f2da";
-          sha256 = "sha256-tazBovTLqc5U6PEjVIKnxNNTdF12uh03cSYPybrC0zw=";
+          rev = "1033d922c82a7223db0ec138e2316557b70ff49f";
+          sha256 = "sha256-N3bJZznNazLewHS4c2B7LP1lgxd1wev+EWVlQ7rOwfU=";
         };
-        beamDeps = with final; [ mix_test_watch earmark ex_doc timex ];
+        beamDeps = with final; [ mix_test_watch ex_doc timex ];
       };
-      earmark = buildMix rec {
-        name = "earmark";
-        version = "1.4.10";
-        src = fetchHex {
-          pkg = name;
-          version = version;
-          sha256 = "sha256-Etv6gIEEeOUh0/+5Qa2fv8u9fevpThNBtMShskEcHCc=";
-        };
-        beamDeps = with final; [ earmark_parser ];
-      };
-      ueberauth_keycloak_strategy = buildMix rec {
-        name = "ueberauth_keycloak_strategy";
-        version = "unstable-2021-06-29";
+      erlport = buildRebar3 rec {
+        name = "erlport";
+        version = "0.10.1-compat";
         src = fetchFromGitHub {
           owner = "tcitworld";
-          repo = "ueberauth_keycloak";
-          rev = "d892f0f9daf9e0023319b69ac2f7c2c6edff2b14";
-          sha256 = "sha256-aDzAtRY7uzK8mgBfw868JglV7A9FHrKkRA9d/3+pkPY=";
+          repo = name;
+          rev = "1f8f4b1a50ecdf7e959090fb566ac45c63c39b0b";
+          sha256 = "sha256-NkoGAW+1MTL0p7uUHl89GcQsbcfyAg/sMr417jUWMNM=";
         };
-        # We skip exvcr here as it is dev-only and would require a huge amount
-        # of packages.
-        beamDeps = with final; [ oauth2 ueberauth credo earmark ex_doc ];
       };
-      ueberauth_gitlab_strategy = buildMix rec {
-        name = "ueberauth_gitlab_strategy";
-        version = "unstable-2021-06-28";
+      exkismet = buildMix rec {
+        name = "exkismet";
+        version = "0.0.1";
         src = fetchFromGitHub {
           owner = "tcitworld";
-          repo = "ueberauth_gitlab";
-          rev = "9fc5d30b5d87ff7cdef293a1c128f25777dcbe59";
-          sha256 = "sha256-yWHlhrDvw9VHiPvKUUtuTaTZ+DUjlKSuBbkOXk7pAcs=";
+          repo = name;
+          rev = "8b5485fde00fafbde20f315bec387a77f7358334";
+          sha256 = "sha256-ttgCWoBKU7VTjZJBhZNtqVF4kN7psBr/qOeR65MbTqw=";
         };
-        # We skip exvcr here as it is dev-only and would require a huge amount
-        # of packages.
-        beamDeps = with final; [ oauth2 ueberauth credo earmark ex_doc ];
+        beamDeps = with final; [ httpoison ];
       };
+      rajska = buildMix rec {
+        name = "rajska";
+        version = "0.0.1";
+        src = fetchFromGitHub {
+          owner = "tcitworld";
+          repo = name;
+          rev = "0c036448e261e8be6a512581c592fadf48982d84";
+          sha256 = "sha256-4pfply1vTAIT2Xvm3kONmrCK05xKfXFvcb8EKoSCXBE=";
+        };
+        beamDeps = with final; [ httpoison absinthe ];
+      };
+
     });
   };
+
+  preConfigure = ''
+    export LANG=C.UTF-8 # fix elixir locale warning
+  '';
 
   # Install the compiled js part
   preBuild = let
     js = callPackage ./js.nix { mobilizon-src = src; };
   in ''
     cp -a "${js}/libexec/mobilizon/deps/priv/static" ./priv
+    chmod 770 -R ./priv
+  '';
+
+  postBuild = ''
+    mix phx.digest --no-deps-check
   '';
 
   passthru = {
     tests.smoke-test = nixosTests.mobilizon;
     updateScript = writeShellScriptBin "update.sh" ''
+      set -eou pipefail
+
       SRC=$(nix path-info .#mobilizon.src)
       ${yarn2nix}/bin/yarn2nix --lockfile="$SRC/js/yarn.lock" > pkgs/servers/mobilizon/yarn.nix
       ${mix2nix}/bin/mix2nix $SRC/mix.lock > pkgs/servers/mobilizon/mix.nix
