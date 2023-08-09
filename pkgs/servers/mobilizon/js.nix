@@ -13,15 +13,13 @@ mkYarnPackage rec {
   buildPhase = ''
     runHook preBuild
 
-    # Tests cannot find the functions of the testing framework
-    rm -r ./deps/mobilizon/tests
     yarn run build
 
     runHook postBuild
   '';
 
-  # doCheck = true;
-  # checkPhase = "yarn test:unit";
+  doCheck = true;
+  checkPhase = "yarn run test";
 
   nativeBuildInputs = [ imagemagick ];
 
