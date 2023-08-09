@@ -74,9 +74,6 @@ mixRelease rec {
       ex_cldr_dates_times = prev.ex_cldr_dates_times.override {
         preBuild = "touch config/prod.exs";
       };
-      ex_cldr_plugs = prev.ex_cldr_plugs.override {
-        preBuild = "touch config/prod.exs";
-      };
       # Upstream issue: https://github.com/bryanjos/geo_postgis/pull/87
       geo_postgis = prev.geo_postgis.overrideAttrs (old: {
         propagatedBuildInputs = old.propagatedBuildInputs ++ [ final.ecto ];
