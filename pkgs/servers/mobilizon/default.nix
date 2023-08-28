@@ -160,9 +160,7 @@ mixRelease rec {
       set -eou pipefail
 
       SRC=$(nix path-info .#mobilizon.src)
-      ${yarn2nix}/bin/yarn2nix --lockfile="$SRC/js/yarn.lock" > pkgs/servers/mobilizon/yarn.nix
       ${mix2nix}/bin/mix2nix $SRC/mix.lock > pkgs/servers/mobilizon/mix.nix
-      cat $SRC/js/package.json > pkgs/servers/mobilizon/package.json
     '';
   };
 
