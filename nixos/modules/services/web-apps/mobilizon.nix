@@ -404,7 +404,7 @@ in
           locations."/" = {
             inherit proxyPass;
           };
-          locations."~ ^/(js|css)" = {
+          locations."~ ^/(js|css|img)" = {
             root = "${package}/lib/mobilizon-${package.version}/priv/static";
             extraConfig = ''
               etag off;
