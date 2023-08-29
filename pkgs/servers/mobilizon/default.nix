@@ -38,8 +38,6 @@ mixRelease rec {
   # This circumvents a startup error for now
   stripDebug = false;
 
-  compileFlags = [ "--no-validate-compile-env" ];
-
   nativeBuildInputs = [ git cmake ];
 
   mixNixDeps = import ./mix.nix {
