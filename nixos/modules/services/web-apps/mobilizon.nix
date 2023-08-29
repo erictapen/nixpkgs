@@ -8,8 +8,6 @@ let
   user = "mobilizon";
   group = "mobilizon";
 
-  package = pkgs.mobilizon;
-
   settingsFormat = pkgs.formats.elixirConf { elixir = pkgs.elixir_1_14; };
 
   configFile = settingsFormat.generate "mobilizon-config.exs" cfg.settings;
@@ -18,10 +16,10 @@ let
   # setting it with systemd services, so that the user can also use them without
   # troubles
   launchers = pkgs.stdenv.mkDerivation rec {
-    pname = "${package.pname}-launchers";
-    inherit (package) version;
+    pname = "${cfg.package.pname}-launchers";
+    inherit (cfg.package) version;
 
-    src = package;
+    src = cfg.package;
 
     nativeBuildInputs = with pkgs; [ makeWrapper ];
 
@@ -72,6 +70,8 @@ in
           set up to serve Mobilizon.
         '';
       };
+
+      package = mkPackageOptionMD pkgs "mobilizon" { };
 
       settings = mkOption {
         type =
@@ -405,7 +405,7 @@ in
             inherit proxyPass;
           };
           locations."~ ^/(js|css|img)" = {
-            root = "${package}/lib/mobilizon-${package.version}/priv/static";
+            root = "${cfg.package}/lib/mobilizon-${cfg.package.version}/priv/static";
             extraConfig = ''
               etag off;
               access_log off;
