@@ -5833,7 +5833,9 @@ with pkgs;
 
   moar = callPackage ../tools/misc/moar { };
 
-  mobilizon = callPackage ../servers/mobilizon { };
+  mobilizon = callPackage ../servers/mobilizon {
+    mobilizon-frontend = callPackage ../servers/mobilizon/frontend.nix { };
+  };
 
   molly-brown = callPackage ../servers/gemini/molly-brown { };
 

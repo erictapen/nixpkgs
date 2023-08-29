@@ -1,13 +1,13 @@
-{ lib, applyPatches, yarn, mkYarnPackage, imagemagick, mobilizon-src }:
+{ lib, callPackage, mkYarnPackage, imagemagick }:
 
+let
+  common = callPackage ./common.nix { };
+in
 mkYarnPackage rec {
-  src = applyPatches {
-    name = "mobilizon-js-src";
-    src = "${mobilizon-src}/js";
-  };
+  src = "${common.src}/js";
 
-  # Somehow $out/deps/mobilizon/node_modules ends up only containing a .bin
-  # directory otherwise.
+  # Somehow $out/deps/mobilizon/node_modules ends up only containing nothing
+  # more than a .bin directory otherwise.
   yarnPostBuild = ''
     rm -rf $out/deps/mobilizon/node_modules
     ln -s $out/node_modules $out/deps/mobilizon/node_modules

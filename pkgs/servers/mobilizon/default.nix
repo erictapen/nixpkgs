@@ -12,7 +12,7 @@
 , git
 , cmake
 , nixosTests
-, srcOverride ? null
+, mobilizon-frontend
 }:
 
 let
@@ -20,19 +20,10 @@ let
     elixir = super.elixir_1_14;
   });
   inherit (beamPackages) mixRelease buildMix buildRebar3 fetchHex;
+  common = callPackage ./common.nix { };
 in
 mixRelease rec {
-  pname = "mobilizon";
-  version = "3.1.3";
-
-  src = if srcOverride != null then srcOverride else
-  fetchFromGitLab {
-    domain = "framagit.org";
-    owner = "framasoft";
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-vYn8wE3cwOH3VssPDKKWAV9ZLKMSGg6XVWFZzJ9HSw0=";
-  };
+  inherit (common) pname version src;
 
   # See https://github.com/whitfin/cachex/issues/205
   # This circumvents a startup error for now
@@ -145,11 +136,8 @@ mixRelease rec {
 
   # Install the compiled js part
   preBuild =
-    let
-      js = callPackage ./js.nix { mobilizon-src = src; };
-    in
     ''
-      cp -a "${js}/libexec/mobilizon/deps/priv/static" ./priv
+      cp -a "${mobilizon-frontend}/libexec/mobilizon/deps/priv/static" ./priv
       chmod 770 -R ./priv
     '';
 
