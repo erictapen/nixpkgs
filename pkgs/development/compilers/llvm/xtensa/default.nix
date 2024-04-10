@@ -1,17 +1,17 @@
-{ lib, llvmPackages_16, fetchFromGitHub }:
+{ lib, llvmPackages_17, fetchFromGitHub }:
 let
-  version = "esp-16.0.0-20230516";
+  version = "esp-17.0.1_20240408";
 in
 lib.mapAttrs
   (_: drv: drv.overrideAttrs (old: {
     inherit version;
     meta.maintainers = [ lib.maintainers.erictapen ];
   }))
-  (llvmPackages_16.override {
+  (llvmPackages_17.override {
     gitRelease = {
-      # For some reason this is actually 16.0.1 ...
-      version = "16.0.1";
-      rev = "fe4f10a809705c2ddbed62145616bb9c85c499c0";
+      # For some reason this is actually 17.0.1 ...
+      version = "17.0.1";
+      rev = "b02b417b69c75c34a17031c5c3c8800f7c99605b";
       rev-version = version;
     };
     officialRelease = null;
@@ -19,6 +19,6 @@ lib.mapAttrs
       owner = "espressif";
       repo = "llvm-project";
       rev = version;
-      sha256 = "sha256-ZdG32esER1/+UcTtuGE4KjEbwEuMAbpk5TVGpIvN8Qw=";
+      sha256 = "0000000000000000000000000000000000000000000000000000000000000000";
     };
   })
