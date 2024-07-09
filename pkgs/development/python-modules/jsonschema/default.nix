@@ -50,7 +50,7 @@ buildPythonPackage rec {
     hatchling
   ];
 
-  propagatedBuildInputs =
+  dependencies =
     [
       attrs
       jsonschema-specifications
