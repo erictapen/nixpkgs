@@ -10,7 +10,6 @@
   jsonschema-specifications,
   pkgutil-resolve-name,
   pip,
-  pytestCheckHook,
   pythonOlder,
   referencing,
   rpds-py,
@@ -25,6 +24,8 @@
   rfc3987,
   uri-template,
   webcolors,
+
+  pytest,
 }:
 
 buildPythonPackage rec {
@@ -86,8 +87,10 @@ buildPythonPackage rec {
 
   nativeCheckInputs = [
     pip
-    pytestCheckHook
+    pytest
   ];
+
+  checkPhase = "pytest tests/";
 
   pythonImportsCheck = [ "jsonschema" ];
 

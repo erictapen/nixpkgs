@@ -6295,7 +6295,14 @@ self: super: with self; {
 
   jsons = callPackage ../development/python-modules/jsons { };
 
-  jsonschema = callPackage ../development/python-modules/jsonschema { };
+  prank-pytest = pkgs.writeShellScriptBin "pytest" ''
+    echo "Checking for valid documentation examples..."
+    echo "Subdoc couldn't find the following modules: importlib-resources, jsonschema-specification, fqdn"
+    echo "Make sure to expose modules correctly using SUBDOC_PATH"
+    exit 1
+  '';
+
+  jsonschema = callPackage ../development/python-modules/jsonschema { pytest = prank-pytest; };
 
   jsonschema-path = callPackage ../development/python-modules/jsonschema-path { };
 
