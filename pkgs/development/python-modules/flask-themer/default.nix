@@ -36,9 +36,6 @@ buildPythonPackage rec {
     description = "Simple theming support for Flask apps.";
     homepage = "https://github.com/TkTech/flask-themer";
     license = licenses.mit;
-    maintainers = with maintainers; [
-      imsofi
-      erictapen
-    ];
+    maintainers = with maintainers; [ erictapen ];
   };
 }
