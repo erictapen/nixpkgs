@@ -19,7 +19,7 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "python-ldap";
     repo = "python-slapd";
-    rev = version;
+    rev = "refs/tags/${version}";
     hash = "sha256-C0nIZfDtVnIS2E2j+D5KDi80Ql7Oq82jK6BsxdFHYJ8=";
   };
 
@@ -46,8 +46,8 @@ buildPythonPackage rec {
 
   meta = with lib; {
     description = "Controls a slapd process in a pythonic way";
-    homepage = "https://github.com/python-ldap/python-slapd/tree/main";
-    changelog = "https://github.com/python-ldap/python-slapd/blob/main/CHANGES.rst";
+    homepage = "https://github.com/python-ldap/python-slapd";
+    changelog = "https://github.com/python-ldap/python-slapd/blob/${src.rev}/CHANGES.rst";
     license = licenses.mit;
     maintainers = with maintainers; [ erictapen ];
   };
