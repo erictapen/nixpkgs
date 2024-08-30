@@ -2,7 +2,6 @@
   lib,
   python3,
   fetchFromGitLab,
-  fetchpatch,
   openldap,
   nixosTests,
 }:
@@ -18,7 +17,7 @@ let
 in
 python.pkgs.buildPythonApplication rec {
   pname = "canaille";
-  version = "0.0.54";
+  version = "0.0.55";
   pyproject = true;
 
   disabled = python.pythonOlder "3.9";
@@ -27,15 +26,8 @@ python.pkgs.buildPythonApplication rec {
     owner = "yaal";
     repo = "canaille";
     rev = "refs/tags/${version}";
-    hash = "sha256-MowvgZsb4i0hsqQbOsPl0dbLxxW0J1KAqAz2xEQ+Yks=";
+    hash = "sha256-zLDVhRk/IbQubjUSl4f7G9UhhmRvMnAJoULhXEpKWAc=";
   };
-
-  patches = [
-    (fetchpatch {
-      url = "https://gitlab.com/yaal/canaille/-/commit/a7e56efd9f7119e191e018c58206ff9f37888aa1.patch";
-      hash = "sha256-3cbEXcEyxxHPCNyoELkwdgAs+nPxFl6BThZkb6AzLUo=";
-    })
-  ];
 
   build-system = with python.pkgs; [
     poetry-core
