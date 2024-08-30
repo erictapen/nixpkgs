@@ -7,13 +7,7 @@
 }:
 
 let
-  python = python3.override {
-    packageOverrides = final: prev: {
-      sentry-sdk = prev.sentry-sdk.overridePythonAttrs (old: {
-        dependencies = old.dependencies ++ prev.sentry-sdk.optional-dependencies.flask;
-      });
-    };
-  };
+  python = python3;
 in
 python.pkgs.buildPythonApplication rec {
   pname = "canaille";
@@ -40,7 +34,7 @@ python.pkgs.buildPythonApplication rec {
     flask-wtf
     pydantic-settings
     wtforms
-  ];
+  ] ++ sentry-sdk.optional-dependencies.flask;
 
   nativeCheckInputs =
     with python.pkgs;
