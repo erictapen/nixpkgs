@@ -26,8 +26,8 @@ buildPythonPackage rec {
   # See https://github.com/NixOS/nixpkgs/issues/103325
   postPatch = ''
     substituteInPlace pyproject.toml \
-      --replace "poetry>=1.0.0" "poetry-core" \
-      --replace "poetry.masonry.api" "poetry.core.masonry.api"
+      --replace-fail "poetry>=1.0.0" "poetry-core" \
+      --replace-fail "poetry.masonry.api" "poetry.core.masonry.api"
   '';
 
   build-system = [ poetry-core ];
