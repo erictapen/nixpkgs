@@ -20,16 +20,17 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "bebleo";
     repo = "pytest-smtpd";
-    rev = "v${version}";
+    rev = "refs/tags/v${version}";
     hash = "sha256-Vu2D2hfxBYxgXQ4Gjr+jFpac9fjpLL2FftBhnqrcQaA=";
   };
 
   build-system = [ hatchling ];
 
   dependencies = [
-    pytest
     smtpdfix
   ];
+
+  buildInputs = [ pytest ];
 
   nativeCheckInputs = [ pytestCheckHook ];
 
