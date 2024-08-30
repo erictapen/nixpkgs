@@ -2,6 +2,7 @@
   lib,
   python3,
   fetchFromGitLab,
+  fetchpatch,
   openldap,
   nixosTests,
 }:
@@ -29,12 +30,12 @@ python.pkgs.buildPythonApplication rec {
     hash = "sha256-MowvgZsb4i0hsqQbOsPl0dbLxxW0J1KAqAz2xEQ+Yks=";
   };
 
-  # See https://github.com/NixOS/nixpkgs/issues/103325
-  postPatch = ''
-    substituteInPlace pyproject.toml \
-      --replace-fail "poetry>=1.0.0" "poetry-core" \
-      --replace-fail "poetry.masonry.api" "poetry.core.masonry.api"
-  '';
+  patches = [
+    (fetchpatch {
+      url = "https://gitlab.com/yaal/canaille/-/commit/a7e56efd9f7119e191e018c58206ff9f37888aa1.patch";
+      hash = "sha256-3cbEXcEyxxHPCNyoELkwdgAs+nPxFl6BThZkb6AzLUo=";
+    })
+  ];
 
   build-system = with python.pkgs; [
     poetry-core
