@@ -19,7 +19,7 @@ buildPythonPackage {
   src = fetchFromGitHub {
     owner = "edelooff";
     repo = "sqlalchemy-json";
-    rev = "v${version}";
+    rev = "refs/tags/v${version}";
     hash = "sha256-Is3DznojvpWYFSDutzCxRLceQMIiS3ZIg0c//MIOF+s=";
   };
 
