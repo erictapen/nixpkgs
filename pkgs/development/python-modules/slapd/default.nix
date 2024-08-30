@@ -3,6 +3,7 @@
   buildPythonPackage,
   pythonOlder,
   fetchFromGitHub,
+  fetchpatch,
   poetry-core,
   openldap,
   pytestCheckHook,
@@ -23,12 +24,12 @@ buildPythonPackage rec {
     hash = "sha256-C0nIZfDtVnIS2E2j+D5KDi80Ql7Oq82jK6BsxdFHYJ8=";
   };
 
-  # See https://github.com/NixOS/nixpkgs/issues/103325
-  postPatch = ''
-    substituteInPlace pyproject.toml \
-      --replace-fail "poetry>=1.0.0" "poetry-core" \
-      --replace-fail "poetry.masonry.api" "poetry.core.masonry.api"
-  '';
+  patches = [
+    (fetchpatch {
+      url = "https://github.com/python-ldap/python-slapd/commit/ab0c6bbb836048fc0cc1717723a675c2970410cd.patch";
+      hash = "sha256-xg4c7iIonkUmNN74q/UeGSuYP3to7q4cLW6+TMW9nh4=";
+    })
+  ];
 
   build-system = [ poetry-core ];
 
