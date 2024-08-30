@@ -41,7 +41,7 @@ buildPythonPackage rec {
   meta = with lib; {
     description = "Utilities for testing Flask applications with WebTest";
     homepage = "https://github.com/level12/flask-webtest";
-    changelog = "https://github.com/level12/flask-webtest/blob/master/changelog.rst";
+    changelog = "https://github.com/level12/flask-webtest/blob/${src.rev}/changelog.rst";
     license = licenses.bsd3;
     maintainers = with maintainers; [ erictapen ];
   };
