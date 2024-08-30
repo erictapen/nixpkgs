@@ -33,7 +33,7 @@ buildPythonPackage rec {
   pythonImportsCheck = [ "flask_themer" ];
 
   meta = with lib; {
-    description = "Simple theming support for Flask apps.";
+    description = "Simple theming support for Flask apps";
     homepage = "https://github.com/TkTech/flask-themer";
     changelog = "https://github.com/TkTech/flask-themer/releases/tag/v${version}";
     license = licenses.mit;
