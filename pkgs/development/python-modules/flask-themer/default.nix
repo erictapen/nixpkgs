@@ -5,7 +5,7 @@
   setuptools,
   flask,
   pytestCheckHook,
-  pytest-cov,
+  pytest-cov-stub,
 }:
 
 buildPythonPackage rec {
@@ -17,8 +17,8 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "TkTech";
     repo = "flask-themer";
-    rev = "v${version}";
-    sha256 = "sha256-2Zw+gKKN0kfjYuruuLQ+3dIFF0X07DTy0Ypc22Ih66w=";
+    rev = "refs/tags/v${version}";
+    hash = "sha256-2Zw+gKKN0kfjYuruuLQ+3dIFF0X07DTy0Ypc22Ih66w=";
   };
 
   build-system = [ setuptools ];
@@ -27,7 +27,7 @@ buildPythonPackage rec {
 
   nativeCheckInputs = [
     pytestCheckHook
-    pytest-cov
+    pytest-cov-stub
   ];
 
   pythonImportsCheck = [ "flask_themer" ];
@@ -35,6 +35,7 @@ buildPythonPackage rec {
   meta = with lib; {
     description = "Simple theming support for Flask apps.";
     homepage = "https://github.com/TkTech/flask-themer";
+    changelog = "https://github.com/TkTech/flask-themer/releases/tag/v${version}";
     license = licenses.mit;
     maintainers = with maintainers; [ erictapen ];
   };
