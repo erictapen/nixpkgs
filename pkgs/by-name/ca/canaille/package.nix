@@ -105,7 +105,7 @@ python.pkgs.buildPythonApplication rec {
   };
 
   meta = with lib; {
-    description = "Lightweight Identity and Autorization Management";
+    description = "Lightweight Identity and Authorization Management";
     homepage = "https://canaille.readthedocs.io/en/latest/index.html";
     changelog = "https://gitlab.com/yaal/canaille/-/blob/${src.rev}/CHANGES.rst";
     license = licenses.mit;
