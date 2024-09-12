@@ -29,12 +29,15 @@ python.pkgs.buildPythonApplication rec {
     babel
   ];
 
-  dependencies = with python.pkgs; [
-    flask
-    flask-wtf
-    pydantic-settings
-    wtforms
-  ] ++ sentry-sdk.optional-dependencies.flask;
+  dependencies =
+    with python.pkgs;
+    [
+      flask
+      flask-wtf
+      pydantic-settings
+      wtforms
+    ]
+    ++ sentry-sdk.optional-dependencies.flask;
 
   nativeCheckInputs =
     with python.pkgs;
