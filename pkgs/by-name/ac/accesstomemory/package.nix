@@ -6,7 +6,8 @@
   lessc,
   php,
   phpCfg ? null,
-  phpunit
+  phpunit,
+  nixosTests,
 }:
 
 let
@@ -65,6 +66,8 @@ php.buildComposerProject (finalAttrs: {
 
   passthru = {
     inherit frontend;
+    phpPackage = php;
+    tests = { inherit (nixosTests) accesstomemory; };
   };
 
 })

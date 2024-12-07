@@ -105,6 +105,7 @@ in {
 
   _3proxy = runTest ./3proxy.nix;
   aaaaxy = runTest ./aaaaxy.nix;
+  accesstomemory = handleTest ./web-apps/accesstomemory.nix {};
   acme = runTest ./acme.nix;
   acme-dns = handleTest ./acme-dns.nix {};
   adguardhome = runTest ./adguardhome.nix;
