@@ -4,6 +4,25 @@ let
   cfg = config.services.accesstomemory;
   fpm = config.services.phpfpm.pools.accesstomemory;
   package = pkgs.accesstomemory;
+  format = pkgs.formats.php { };
+  configPhp = format.generate "config.php" {
+    all.propel = {
+      class = "sfPropelDatabase";
+      param = {
+        encoding = "utf8mb4";
+        persistent = true;
+        pooling = true;
+        dsn = "mysql:dbname=accesstomemory;port=3306";
+        username = "accesstomemory";
+        password = "password";
+      };
+    };
+  };
+  webroot = pkgs.runCommand "accesstomemory-webroot" ''
+    mkdir -p $out
+    cp -r ${package}/share/php/accesstomemory/* $out/
+    ln -s ${configPhp} $out/config/config.php
+  '';
 in {
   options.services.accesstomemory = {
     enable = mkEnableOption "Access to Memory (AtoM) service";
@@ -18,9 +37,13 @@ in {
 
     services.mysql = {
       enable = true;
+      settings.mysqld = {
+        sql_mode = "ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";
+        optimizer_switch = "'block_nested_loop=off'";
+      };
       # Recommended by upstream
       # https://www.accesstomemory.org/en/docs/2.8/admin-manual/installation/ubuntu/#mysql
-      package = pkgs.percona-server;
+      package = pkgs.percona-server_8_0;
       ensureDatabases = [ "accesstomemory" ];
       ensureUsers = [
         {
@@ -44,6 +67,9 @@ in {
         fop imagemagick ghostscript
         ffmpeg
         # poppler-utils
+
+        # Only for development of the module
+        accesstomemory.phpPackage.packages.composer phpunit accesstomemory.phpPackage
       ];
     };
     users.groups.accesstomemory = {};
@@ -117,7 +143,7 @@ in {
       enableACME = true;
     };
 
-    # php symfony tools:install --database-host=localhost --database-port=3306 --database-name=accesstomemory --database-user=access-to-memory --database-password=password --admin-email=admin@erictapen.name --admin-username=admin --admin-password=admin
+    # php symfony tools:install --database-host=localhost --database-port=3306 --database-name=accesstomemory --database-user=accesstomemory --database-password=password --admin-email=admin@erictapen.name --admin-username=admin --admin-password=admin
 
   };
 }

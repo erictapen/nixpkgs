@@ -47,6 +47,7 @@ import ../make-test-python.nix (
       };
 
     testScript = let
+      # Unit tests need a running database
       runUnitTests = pkgs.writeShellApplication {
         name = "run-unit-tests";
         runtimeInputs = with pkgs; [
