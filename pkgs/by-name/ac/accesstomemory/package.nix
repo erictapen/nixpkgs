@@ -16,7 +16,7 @@ let
     owner = "artefactual";
     repo = "atom";
     rev = "dev/php-80-update";
-    hash = "sha256-HuMWI+UT/FA+Mr52jqvTU9OphaMpmxwUCsWNEyf+P+0=";
+    hash = "sha256-snU/yZ/5BN1lkDfAcwvl5F3wKRqEqbylcXemGbwi6P8=";
   };
   frontend = buildNpmPackage rec {
     pname = "accesstomemory-frontend";
@@ -56,7 +56,7 @@ php.buildComposerProject (finalAttrs: {
     extraConfig = phpCfg;
   });
 
-  vendorHash = "sha256-v8FPCgLWljEFuk/ghyZhye96IGdmlIrYXwvmeu8XbGI=";
+  vendorHash = "sha256-B7mccuIPSLjxKMwHn93V1WtQmpFNpkVVxRvblhXWMFE=";
 
   # Run unit tests with `composer test`
 
