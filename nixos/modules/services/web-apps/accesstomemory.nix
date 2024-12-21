@@ -40,6 +40,7 @@ in {
       settings.mysqld = {
         sql_mode = "ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";
         optimizer_switch = "'block_nested_loop=off'";
+        bind-address = "127.0.0.1";
       };
       # Recommended by upstream
       # https://www.accesstomemory.org/en/docs/2.8/admin-manual/installation/ubuntu/#mysql
