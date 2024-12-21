@@ -175,6 +175,11 @@ in
           url = "https://maven.search-guard.com/search-guard-suite-release/com/floragunn/search-guard-suite-plugin/${version}/search-guard-suite-plugin-${version}.zip";
           hash = "sha256-j8dz7rUKWqMvT6EksoFIuGJzYcgdMipKeg2d8UtzlDI=";
         }
+      else if esVersion == "6.8.21" then
+        fetchurl {
+          url = "https://maven.search-guard.com/search-guard-release/com/floragunn/search-guard-6/${version}/search-guard-6-${version}.zip";
+          sha256 = "19nj513wigwd0mzq747zax4fzvv5vi24f7j0636rydd9iv9cyhg2";
+        }
       else throw "unsupported version ${version} for plugin ${pluginName}";
     meta = with lib; {
       homepage = "https://search-guard.com";
