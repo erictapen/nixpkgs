@@ -66,18 +66,55 @@ in {
     users.users.accesstomemory = {
       isSystemUser = true;
       group = "accesstomemory";
+      home = "/var/lib/accesstomemory";
       packages = with pkgs; [
         fop imagemagick ghostscript
         ffmpeg
         # poppler-utils
 
         # Only for development of the module
-        accesstomemory.phpPackage
-        accesstomemory.phpPackage.packages.composer
-        (phpunit.override { php = accesstomemory.phpPackage; })
+        package.phpPackage
+        package.phpPackage.packages.composer
+        (phpunit.override { php = package.phpPackage; })
       ];
     };
     users.groups.accesstomemory = {};
+
+    systemd.services.accesstomemory-install = {
+      description = "Accesstomemory install";
+      path = [
+        package.phpPackage
+      ];
+      serviceConfig = {
+        Type = "oneshot";
+        StateDirectory = "accesstomemory";
+        User = "accesstomemory";
+        Group = "accesstomemory";
+      };
+      script = ''
+        # Delete everything and install again for now
+        rm -rf *
+        cp -r ${package}/share/php/accesstomemory/* .
+        chmod u+w -R .
+        php -d memory_limit=4G \
+          symfony tools:install \
+          --database-host=localhost \
+          --database-port=3306 \
+          --database-name=accesstomemory \
+          --database-user=accesstomemory \
+          --database-password=password \
+          --admin-email=admin@erictapen.name \
+          --admin-username=admin \
+          --admin-password=admin \
+          --search-host=localhost \
+          --search-port=9200 \
+          --search-index=accesstomemory \
+          --site-title=Test \
+          --site-description="Test description" \
+          --site-base-url="https://atom.erictapen.name" \
+          --no-confirmation
+      '';
+    };
 
     services.phpfpm.pools.accesstomemory = {
       user = "accesstomemory";
@@ -100,6 +137,8 @@ in {
         "pm.max_requests" = "200";
       };
     };
+    systemd.services.phpfpm-accesstomemory.requires = [ "accesstomemory-install.service" ];
+    systemd.services.phpfpm-accesstomemory.after = [ "accesstomemory-install.service" "elasticsearch.service" "mysql.service" ];
 
     services.nginx.enable = true;
     # https://www.accesstomemory.org/en/docs/2.8/admin-manual/installation/ubuntu/#nginx
@@ -110,7 +149,7 @@ in {
       '';
       locations = {
         "~* ^/(css|dist|js|images|plugins|vendor)/.*\\.(css|png|jpg|js|svg|ico|gif|pdf|woff|ttf)$" = {
-          root = package;
+          root = "/var/lib/accesstomemory";
         };
         "~* ^/(downloads)/.*\\.(pdf|xml|html|csv|zip|rtf)$" = {};
         "~ ^/(ead.dtd|favicon.ico|robots.txt|sitemap.*)$" = {};
@@ -150,8 +189,6 @@ in {
       forceSSL = true;
       enableACME = true;
     };
-
-    # php symfony tools:install --database-host=localhost --database-port=3306 --database-name=accesstomemory --database-user=accesstomemory --database-password=password --admin-email=admin@erictapen.name --admin-username=admin --admin-password=admin
 
   };
 }
