@@ -35,7 +35,7 @@ import ../make-test-python.nix (
 
         users.users.accesstomemory = {
           shell = pkgs.bashInteractive;
-          packages = with pkgs; [];
+          packages = with pkgs; [ ];
         };
       };
 
@@ -47,25 +47,29 @@ import ../make-test-python.nix (
         security.pki.certificateFiles = [ certs.ca.cert ];
       };
 
-    testScript = let
-      # Unit tests need a running database
-      runUnitTests = pkgs.writeShellApplication {
-        name = "run-unit-tests";
-        runtimeInputs = with pkgs; [
-          accesstomemory.phpPackage accesstomemory.phpPackage.packages.composer (phpunit.override { php = accesstomemory.phpPackage; })
-        ];
-        text = ''
-          cd /var/lib/accesstomemory
-          echo "Running atom unit tests..."
-          composer test
-        '';
-      };
-    in ''
-      start_all()
-      server.wait_for_unit("mysql.service")
-      server.wait_for_unit("elasticsearch.service")
-      server.wait_for_unit("phpfpm-accesstomemory.service")
-      server.succeed("sudo -u accesstomemory ${lib.getExe runUnitTests}")
-    '';
+    testScript =
+      let
+        # Unit tests need a running database
+        runUnitTests = pkgs.writeShellApplication {
+          name = "run-unit-tests";
+          runtimeInputs = with pkgs; [
+            accesstomemory.phpPackage
+            accesstomemory.phpPackage.packages.composer
+            (phpunit.override { php = accesstomemory.phpPackage; })
+          ];
+          text = ''
+            cd /var/lib/accesstomemory
+            echo "Running atom unit tests..."
+            composer test
+          '';
+        };
+      in
+      ''
+        start_all()
+        server.wait_for_unit("mysql.service")
+        server.wait_for_unit("elasticsearch.service")
+        server.wait_for_unit("phpfpm-accesstomemory.service")
+        server.succeed("sudo -u accesstomemory ${lib.getExe runUnitTests}")
+      '';
   }
 )

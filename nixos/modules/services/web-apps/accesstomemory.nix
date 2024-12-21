@@ -1,6 +1,16 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
-  inherit (lib) mkEnableOption mkOption mapAttrs mkDefault;
+  inherit (lib)
+    mkEnableOption
+    mkOption
+    mapAttrs
+    mkDefault
+    ;
   cfg = config.services.accesstomemory;
   fpm = config.services.phpfpm.pools.accesstomemory;
   package = pkgs.accesstomemory;
@@ -23,7 +33,8 @@ let
     cp -r ${package}/share/php/accesstomemory/* $out/
     ln -s ${configPhp} $out/config/config.php
   '';
-in {
+in
+{
   options.services.accesstomemory = {
     enable = mkEnableOption "Access to Memory (AtoM) service";
     domain = lib.mkOption {
@@ -68,7 +79,9 @@ in {
       group = "accesstomemory";
       home = "/var/lib/accesstomemory";
       packages = with pkgs; [
-        fop imagemagick ghostscript
+        fop
+        imagemagick
+        ghostscript
         ffmpeg
         # poppler-utils
 
@@ -78,7 +91,7 @@ in {
         (phpunit.override { php = package.phpPackage; })
       ];
     };
-    users.groups.accesstomemory = {};
+    users.groups.accesstomemory = { };
 
     systemd.services.accesstomemory-install = {
       description = "Accesstomemory install";
@@ -88,6 +101,7 @@ in {
       serviceConfig = {
         Type = "oneshot";
         StateDirectory = "accesstomemory";
+        WorkingDirectory = "/var/lib/accesstomemory";
         User = "accesstomemory";
         Group = "accesstomemory";
       };
@@ -138,7 +152,11 @@ in {
       };
     };
     systemd.services.phpfpm-accesstomemory.requires = [ "accesstomemory-install.service" ];
-    systemd.services.phpfpm-accesstomemory.after = [ "accesstomemory-install.service" "elasticsearch.service" "mysql.service" ];
+    systemd.services.phpfpm-accesstomemory.after = [
+      "accesstomemory-install.service"
+      "elasticsearch.service"
+      "mysql.service"
+    ];
 
     services.nginx.enable = true;
     # https://www.accesstomemory.org/en/docs/2.8/admin-manual/installation/ubuntu/#nginx
@@ -151,8 +169,8 @@ in {
         "~* ^/(css|dist|js|images|plugins|vendor)/.*\\.(css|png|jpg|js|svg|ico|gif|pdf|woff|ttf)$" = {
           root = "/var/lib/accesstomemory";
         };
-        "~* ^/(downloads)/.*\\.(pdf|xml|html|csv|zip|rtf)$" = {};
-        "~ ^/(ead.dtd|favicon.ico|robots.txt|sitemap.*)$" = {};
+        "~* ^/(downloads)/.*\\.(pdf|xml|html|csv|zip|rtf)$" = { };
+        "~ ^/(ead.dtd|favicon.ico|robots.txt|sitemap.*)$" = { };
         "/" = {
           tryFiles = "$uri /index.php?$args";
           extraConfig = ''
@@ -161,7 +179,7 @@ in {
             }
           '';
         };
-        "~* /uploads/r/(.*)/conf/" = {};
+        "~* /uploads/r/(.*)/conf/" = { };
         "~* ^/uploads/r/(.*)$" = {
           extraConfig = ''
             include ${config.services.nginx.package}/conf/fastcgi.conf;

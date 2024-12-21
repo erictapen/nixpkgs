@@ -46,16 +46,28 @@ php.buildComposerProject (finalAttrs: {
 
   composerNoDev = true;
 
-  php = php.buildEnv ({
-    extensions = ({ all, enabled }:
-      enabled
+  php = php.buildEnv (
+    {
+      extensions = (
+        { all, enabled }:
+        enabled
         ++ (with all; [
-            curl ldap opcache readline mbstring xsl zip apcu imagick
-          ])
-    );
-  } // lib.optionalAttrs (phpCfg != null) {
-    extraConfig = phpCfg;
-  });
+          curl
+          ldap
+          opcache
+          readline
+          mbstring
+          xsl
+          zip
+          apcu
+          imagick
+        ])
+      );
+    }
+    // lib.optionalAttrs (phpCfg != null) {
+      extraConfig = phpCfg;
+    }
+  );
 
   vendorHash = "sha256-B7mccuIPSLjxKMwHn93V1WtQmpFNpkVVxRvblhXWMFE=";
 
