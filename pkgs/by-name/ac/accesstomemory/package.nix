@@ -4,13 +4,14 @@
   buildNpmPackage,
   fetchNpmDeps,
   lessc,
-  php,
+  php82,
   phpCfg ? null,
   phpunit,
   nixosTests,
 }:
 
 let
+  php = php82;
   version = "2.8.2";
   src = fetchFromGitHub {
     owner = "artefactual";
@@ -66,7 +67,7 @@ php.buildComposerProject (finalAttrs: {
 
   passthru = {
     inherit frontend;
-    phpPackage = php;
+    phpPackage = finalAttrs.php;
     tests = { inherit (nixosTests) accesstomemory; };
   };
 

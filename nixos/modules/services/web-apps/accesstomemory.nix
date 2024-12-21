@@ -46,18 +46,20 @@ in {
       # https://www.accesstomemory.org/en/docs/2.8/admin-manual/installation/ubuntu/#mysql
       package = pkgs.percona-server_8_0;
       ensureDatabases = [ "accesstomemory" ];
-      ensureUsers = [
-        {
-          name = "accesstomemory";
-          ensurePermissions = {
-            "accesstomemory.*" = "ALL PRIVILEGES";
-          };
-        }
-      ];
+      # TODO make atom work with connection by unix socket
+      initialScript = pkgs.writeText "set-password.sql" ''
+        CREATE USER IF NOT EXISTS 'accesstomemory'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY 'password';
+        FLUSH PRIVILEGES;
+        GRANT ALL PRIVILEGES ON accesstomemory.* TO 'accesstomemory'@'localhost' WITH GRANT OPTION;
+        FLUSH PRIVILEGES;
+        UPDATE mysql.user SET Host = 'localhost' WHERE User = 'accesstomemory';
+        FLUSH PRIVILEGES;
+      '';
     };
 
     # unfree
-    # services.elasticsearch.enable = true;
+    services.elasticsearch.enable = true;
+    services.elasticsearch.package = pkgs.elasticsearch6;
 
     # services.gearman.enable = true;
 
@@ -70,7 +72,9 @@ in {
         # poppler-utils
 
         # Only for development of the module
-        accesstomemory.phpPackage.packages.composer phpunit accesstomemory.phpPackage
+        accesstomemory.phpPackage
+        accesstomemory.phpPackage.packages.composer
+        (phpunit.override { php = accesstomemory.phpPackage; })
       ];
     };
     users.groups.accesstomemory = {};
@@ -80,6 +84,9 @@ in {
       group = "accesstomemory";
       inherit (package) phpPackage;
       phpEnv = { };
+      phpOptions = ''
+        memory_limit = 512M
+      '';
       settings = mapAttrs (name: mkDefault) {
         "listen.owner" = config.services.nginx.user;
         "listen.group" = config.services.nginx.group;
