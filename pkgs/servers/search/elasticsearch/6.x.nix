@@ -20,7 +20,7 @@ stdenv.mkDerivation (rec {
     url = "https://artifacts.elastic.co/downloads/elasticsearch/${pname}-${version}.tar.gz";
     sha256 =
       if enableUnfree
-      then "1hkcgqsrnnx3zjpgar4424mxfaxrx0zbrp7n7n0dlbhphshwnkmd"
+      then "sha256-Qkr5H4OPnl8T4Ckvl8vWMzU1RQKRpiHXYb1Hnfwt/3g="
       else "1pglg60aigy31xmpfchnxcc04nd18zwc3av4m0kyp00yk5mnlyqm";
   };
 
