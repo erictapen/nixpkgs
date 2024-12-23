@@ -28,11 +28,6 @@ let
       };
     };
   };
-  webroot = pkgs.runCommand "accesstomemory-webroot" ''
-    mkdir -p $out
-    cp -r ${package}/share/php/accesstomemory/* $out/
-    ln -s ${configPhp} $out/config/config.php
-  '';
 in
 {
   options.services.accesstomemory = {
@@ -151,12 +146,15 @@ in
         "pm.max_requests" = "200";
       };
     };
-    systemd.services.phpfpm-accesstomemory.requires = [ "accesstomemory-install.service" ];
-    systemd.services.phpfpm-accesstomemory.after = [
-      "accesstomemory-install.service"
-      "elasticsearch.service"
-      "mysql.service"
-    ];
+    systemd.services.phpfpm-accesstomemory = {
+      requires = [ "accesstomemory-install.service" ];
+      after = [
+        "accesstomemory-install.service"
+        "elasticsearch.service"
+        "mysql.service"
+      ];
+      restartTriggers = [ package ];
+    };
 
     services.nginx.enable = true;
     # https://www.accesstomemory.org/en/docs/2.8/admin-manual/installation/ubuntu/#nginx
@@ -166,7 +164,7 @@ in
         client_max_body_size 72M;
       '';
       locations = {
-        "~* ^/(css|dist|js|images|plugins|vendor)/.*\\.(css|png|jpg|js|svg|ico|gif|pdf|woff|ttf)$" = {
+        "~* ^/(css|dist|js|images|plugins|vendor)/.*\\.(css|png|jpg|js|svg|ico|gif|pdf|woff|woff2|ttf)$" = {
           root = "/var/lib/accesstomemory";
         };
         "~* ^/(downloads)/.*\\.(pdf|xml|html|csv|zip|rtf)$" = { };

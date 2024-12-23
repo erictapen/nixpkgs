@@ -1,5 +1,6 @@
 {
   lib,
+  applyPatches,
   fetchFromGitHub,
   buildNpmPackage,
   fetchNpmDeps,
@@ -13,11 +14,16 @@
 let
   php = php82;
   version = "2.8.2";
-  src = fetchFromGitHub {
-    owner = "artefactual";
-    repo = "atom";
-    rev = "dev/php-80-update";
-    hash = "sha256-snU/yZ/5BN1lkDfAcwvl5F3wKRqEqbylcXemGbwi6P8=";
+  src = applyPatches {
+    src = fetchFromGitHub {
+      owner = "artefactual";
+      repo = "atom";
+      rev = "dev/php-80-update";
+      hash = "sha256-snU/yZ/5BN1lkDfAcwvl5F3wKRqEqbylcXemGbwi6P8=";
+    };
+    patches = [
+      # ./dev.patch
+    ];
   };
   frontend = buildNpmPackage rec {
     pname = "accesstomemory-frontend";
@@ -35,7 +41,7 @@ let
 
     installPhase = ''
       mkdir $out
-      cp -r dist/* $out/
+      cp -r css dist js images plugins vendor $out/
     '';
   };
 in
@@ -73,7 +79,7 @@ php.buildComposerProject (finalAttrs: {
   # Run unit tests with `composer test`
 
   postInstall = ''
-    ln -s ${frontend} $out/dist
+    cp -r ${frontend}/* $out/share/php/accesstomemory/
   '';
 
   passthru = {
