@@ -109,7 +109,7 @@ in
         php -d memory_limit=4G \
           symfony tools:install \
           --database-host=localhost \
-          --database-port=3306 \
+          --database-port=${toString config.services.mysql.settings.mysqld.port} \
           --database-name=accesstomemory \
           --database-user=accesstomemory \
           --database-password=password \
@@ -117,7 +117,7 @@ in
           --admin-username=admin \
           --admin-password=admin \
           --search-host=localhost \
-          --search-port=9200 \
+          --search-port=${toString config.services.elasticsearch.port} \
           --search-index=accesstomemory \
           --site-title=Test \
           --site-description="Test description" \
