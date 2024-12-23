@@ -91,7 +91,7 @@ in
     services.elasticsearch.enable = true;
     services.elasticsearch.package = pkgs.elasticsearch6;
 
-    # services.gearman.enable = true;
+    services.gearmand.enable = true;
 
     users.users.accesstomemory = {
       isSystemUser = true;
@@ -149,7 +149,9 @@ in
           --no-confirmation
         # The install script doesn't natively support unix socket connection for the db
         sed -i "s|'dsn' => 'mysql:dbname=accesstomemory;port=9999',|'dsn' => 'mysql:unix_socket=/run/mysqld/mysqld.sock;dbname=accesstomemory',|g" config/config.php
+        sed -i 's|default: 127.0.0.1:4730|default: 127.0.0.1:${toString config.services.gearmand.port}|g' config/gearman.yml
       '';
+      restartTriggers = [ package ];
     };
 
     systemd.services.accesstomemory-worker = {
@@ -159,6 +161,7 @@ in
         "accesstomemory-install.service"
         "elasticsearch.service"
         "mysql.service"
+        "gearmand.service"
       ];
       requires = [ "accesstomemory-install.service" ];
       restartTriggers = [ package ];
@@ -175,6 +178,12 @@ in
             symfony \
             jobs:worker
         '';
+      };
+      unitConfig = {
+        # High interval and low restart limit to increase the possibility
+        # of hitting the rate limits in long running recurrent jobs.
+        StartLimitIntervalSec = "24h";
+        StartLimitBurst = "3";
       };
     };
 
