@@ -90,6 +90,7 @@ in
 
     systemd.services.accesstomemory-install = {
       description = "Accesstomemory install";
+      after = [ "network.target" ];
       path = [
         package.phpPackage
       ];
@@ -125,6 +126,25 @@ in
       '';
     };
 
+    systemd.services.accesstomemory-worker = {
+      description = "Accesstomemory worker";
+      after = [ "network.target" ];
+      serviceConfig = {
+        Type = "simple";
+        StateDirectory = "accesstomemory";
+        WorkingDirectory = "/var/lib/accesstomemory";
+        User = "accesstomemory";
+        Group = "accesstomemory";
+        ExecStart = ''
+          ${lib.getExe package.phpPackage} \
+            -d memory_limit=-1 \
+            -d error_reporting="E_ALL" \
+            symfony \
+            jobs:worker
+        '';
+      };
+    };
+
     services.phpfpm.pools.accesstomemory = {
       user = "accesstomemory";
       group = "accesstomemory";
@@ -148,6 +168,7 @@ in
     };
     systemd.services.phpfpm-accesstomemory = {
       requires = [ "accesstomemory-install.service" ];
+      wants = [ "accesstomemory-worker.service" ];
       after = [
         "accesstomemory-install.service"
         "elasticsearch.service"
