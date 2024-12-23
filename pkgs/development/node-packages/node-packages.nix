@@ -18554,6 +18554,15 @@ let
         sha512 = "1j20GZTsvKNkc4BY3NpMOM8tt///wY3FpIzozTOFO2ffuZcV61nojHXVKIy3WM+7ADCy5FVhdZYHYDdgTU0yJw==";
       };
     };
+    "native-request-1.1.2" = {
+      name = "native-request";
+      packageName = "native-request";
+      version = "1.1.2";
+      src = fetchurl {
+        url = "https://registry.npmjs.org/native-request/-/native-request-1.1.2.tgz";
+        sha512 = "sha512-/etjwrK0J4Ebbcnt35VMWnfiUX/B04uwGJxyJInagxDqf2z5drSt/lsOvEMWGYunz1kaLZAFrV4NDAbOoDKvAQ==";
+      };
+    };
     "copy-descriptor-0.1.1" = {
       name = "copy-descriptor";
       packageName = "copy-descriptor";
@@ -72644,29 +72653,22 @@ in
   less = nodeEnv.buildNodePackage {
     name = "less";
     packageName = "less";
-    version = "4.2.0";
+    version = "3.13.1";
     src = fetchurl {
-      url = "https://registry.npmjs.org/less/-/less-4.2.0.tgz";
-      sha512 = "P3b3HJDBtSzsXUl0im2L7gTO5Ubg8mEN6G8qoTS77iXxXX4Hvu4Qj540PZDvQ8V6DmX6iXo98k7Md0Cm1PrLaA==";
+      url = "https://registry.npmjs.org/less/-/less-3.13.1.tgz";
+      sha512 = "sha512-SwA1aQXGUvp+P5XdZslUOhhLnClSLIjWvJhmd+Vgib5BFIr9lMNlQwmwUNOjXThF/A0x+MCYYPeWEfeWiLRnTw==";
     };
     dependencies = [
       sources."copy-anything-2.0.6"
       sources."errno-0.1.8"
       sources."graceful-fs-4.2.11"
-      sources."iconv-lite-0.6.3"
       sources."image-size-0.5.5"
-      sources."is-what-3.14.1"
       sources."make-dir-2.1.0"
       sources."mime-1.6.0"
-      sources."needle-3.3.1"
-      sources."parse-node-version-1.0.1"
-      sources."pify-4.0.1"
-      sources."prr-1.0.1"
-      sources."safer-buffer-2.1.2"
-      sources."sax-1.4.1"
-      sources."semver-5.7.2"
+      sources."native-request-1.1.2"
       sources."source-map-0.6.1"
       sources."tslib-2.7.0"
+      sources."is-what-3.14.1"
     ];
     buildInputs = globalBuildInputs;
     meta = {
