@@ -765,6 +765,7 @@
   ./services/misc/freeswitch.nix
   ./services/misc/fstrim.nix
   ./services/misc/gammu-smsd.nix
+  ./services/misc/gearmand.nix
   ./services/misc/geoipupdate.nix
   ./services/misc/gitea.nix
   ./services/misc/gitlab.nix
