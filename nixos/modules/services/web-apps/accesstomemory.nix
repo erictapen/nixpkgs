@@ -143,8 +143,8 @@ in
           --search-host=localhost \
           --search-port=${toString config.services.elasticsearch.port} \
           --search-index=accesstomemory \
-          --site-title='${cfg.title}' \
-          --site-description='${cfg.description}' \
+          --site-title='${lib.escapeShellArg cfg.title}' \
+          --site-description='${lib.escapeShellArg cfg.description}' \
           --site-base-url='https://${cfg.domain}' \
           --no-confirmation
         # The install script doesn't natively support unix socket connection for the db
