@@ -8,6 +8,7 @@ let
   inherit (lib)
     mkEnableOption
     mkOption
+    types
     mapAttrs
     mkDefault
     ;
@@ -15,27 +16,27 @@ let
   fpm = config.services.phpfpm.pools.accesstomemory;
   package = pkgs.accesstomemory;
   format = pkgs.formats.php { };
-  configPhp = format.generate "config.php" {
-    all.propel = {
-      class = "sfPropelDatabase";
-      param = {
-        encoding = "utf8mb4";
-        persistent = true;
-        pooling = true;
-        dsn = "mysql:dbname=accesstomemory;port=3306";
-        username = "accesstomemory";
-        password = "password";
-      };
-    };
-  };
+  # configPhp = format.generate "config.php" {
+  #   all.propel = {
+  #     class = "sfPropelDatabase";
+  #     param = {
+  #       encoding = "utf8mb4";
+  #       persistent = true;
+  #       pooling = true;
+  #       dsn = "mysql:dbname=accesstomemory;port=3306";
+  #       username = "accesstomemory";
+  #       password = "password";
+  #     };
+  #   };
+  # };
 in
 {
   options.services.accesstomemory = {
     enable = mkEnableOption "Access to Memory (AtoM) service";
-    domain = lib.mkOption {
+    domain = mkOption {
       description = "The domain name serving your AtoM instance.";
       example = "atom.example.org";
-      type = lib.types.str;
+      type = types.str;
     };
   };
 
@@ -52,15 +53,14 @@ in
       # https://www.accesstomemory.org/en/docs/2.8/admin-manual/installation/ubuntu/#mysql
       package = pkgs.percona-server_8_0;
       ensureDatabases = [ "accesstomemory" ];
-      # TODO make atom work with connection by unix socket
-      initialScript = pkgs.writeText "set-password.sql" ''
-        CREATE USER IF NOT EXISTS 'accesstomemory'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY 'password';
-        FLUSH PRIVILEGES;
-        GRANT ALL PRIVILEGES ON accesstomemory.* TO 'accesstomemory'@'localhost' WITH GRANT OPTION;
-        FLUSH PRIVILEGES;
-        UPDATE mysql.user SET Host = 'localhost' WHERE User = 'accesstomemory';
-        FLUSH PRIVILEGES;
-      '';
+      ensureUsers = [
+        {
+    name = "accesstomemory";
+    ensurePermissions = {
+      "accesstomemory.*" = "ALL PRIVILEGES";
+    };
+  }
+      ];
     };
 
     # unfree
@@ -109,7 +109,7 @@ in
         php -d memory_limit=4G \
           symfony tools:install \
           --database-host=localhost \
-          --database-port=${toString config.services.mysql.settings.mysqld.port} \
+          --database-port=9999 \
           --database-name=accesstomemory \
           --database-user=accesstomemory \
           --database-password=password \
@@ -123,12 +123,21 @@ in
           --site-description="Test description" \
           --site-base-url="https://atom.erictapen.name" \
           --no-confirmation
+        # The install script doesn't natively support unix socket connection for the db
+        sed -i "s|'dsn' => 'mysql:dbname=accesstomemory;port=9999',|'dsn' => 'mysql:unix_socket=/run/mysqld/mysqld.sock;dbname=accesstomemory',|g" config/config.php
       '';
     };
 
     systemd.services.accesstomemory-worker = {
       description = "Accesstomemory worker";
-      after = [ "network.target" ];
+      after = [
+        "network.target"
+        "accesstomemory-install.service"
+        "elasticsearch.service"
+        "mysql.service"
+      ];
+      requires = [ "accesstomemory-install.service" ];
+      restartTriggers = [ package ];
       serviceConfig = {
         Type = "simple";
         StateDirectory = "accesstomemory";
