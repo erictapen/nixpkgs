@@ -27,12 +27,11 @@ let
 
     env.CYPRESS_INSTALL_BINARY = "0"; # disallow cypress from downloading binaries in sandbox
 
-    # Compiling these plugins fails currently
-    # nativeBuildInputs = [ lessc ];
-    # postBuild = ''
-    #   make -C plugins/arDominionPlugin
-    #   make -C plugins/arArchivesCanadaPlugin
-    # '';
+    nativeBuildInputs = [ lessc ];
+    postBuild = ''
+      make -C plugins/arDominionPlugin
+      make -C plugins/arArchivesCanadaPlugin
+    '';
 
     installPhase = ''
       mkdir $out
