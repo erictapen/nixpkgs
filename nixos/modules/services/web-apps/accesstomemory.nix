@@ -38,6 +38,30 @@ in
       example = "atom.example.org";
       type = types.str;
     };
+    title = mkOption {
+      description = "Site title";
+      example = "AtoM";
+      type = types.str;
+    };
+    description = mkOption {
+      description = "Site description";
+      example = "AtoM - Access to Memory";
+      type = types.str;
+    };
+    admin.username = mkOption {
+      description = "The admin username";
+      default = "admin";
+      type = types.str;
+    };
+    admin.passwordFile = mkOption {
+      description = "File containing the admin password";
+      type = types.path;
+    };
+    admin.email = mkOption {
+      description = "The admin email address";
+      example = "admin@example.org";
+      type = types.str;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -113,15 +137,15 @@ in
           --database-name=accesstomemory \
           --database-user=accesstomemory \
           --database-password=password \
-          --admin-email=admin@erictapen.name \
-          --admin-username=admin \
-          --admin-password=admin \
+          --admin-email='${cfg.admin.email}' \
+          --admin-username='${cfg.admin.username}' \
+          --admin-password="$(cat ${cfg.admin.passwordFile})" \
           --search-host=localhost \
           --search-port=${toString config.services.elasticsearch.port} \
           --search-index=accesstomemory \
-          --site-title=Test \
-          --site-description="Test description" \
-          --site-base-url="https://atom.erictapen.name" \
+          --site-title='${cfg.title}' \
+          --site-description='${cfg.description}' \
+          --site-base-url='https://${cfg.domain}' \
           --no-confirmation
         # The install script doesn't natively support unix socket connection for the db
         sed -i "s|'dsn' => 'mysql:dbname=accesstomemory;port=9999',|'dsn' => 'mysql:unix_socket=/run/mysqld/mysqld.sock;dbname=accesstomemory',|g" config/config.php
