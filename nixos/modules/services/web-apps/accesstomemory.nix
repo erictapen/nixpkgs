@@ -168,6 +168,8 @@ in
           --site-base-url='https://${cfg.domain}' \
           --no-confirmation
         sed -i 's|default: 127.0.0.1:4730|default: 127.0.0.1:${toString config.services.gearmand.port}|g' config/gearman.yml
+        # CSP is off by default, it's good to have it activated
+        sed -i 's|Content-Security-Policy-Report-Only|Content-Security-Policy|g' config/app.yml
       '';
       restartTriggers = [ package ];
     };
