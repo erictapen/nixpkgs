@@ -17,8 +17,8 @@ import ../make-test-python.nix (
         services.accesstomemory = {
           enable = true;
           domain = "${serverDomain}";
-          title = "AtoM";
-          description = "An example description";
+          title = "A very specific title";
+          description = "An even more specific description";
           admin = {
             passwordFile = pkgs.writeText "insecure-password" "thisisnotapassword";
             email = "admin@${serverDomain}";
@@ -38,11 +38,6 @@ import ../make-test-python.nix (
           80
           443
         ];
-
-        users.users.accesstomemory = {
-          shell = pkgs.bashInteractive;
-          packages = with pkgs; [ ];
-        };
       };
 
     nodes.client =
