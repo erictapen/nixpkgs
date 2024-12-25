@@ -239,12 +239,15 @@ in
       };
     };
     systemd.services.phpfpm-accesstomemory = {
-      requires = [ "accesstomemory-install.service" ];
-      wants = [ "accesstomemory-worker.service" ];
-      after = [
+      requires = [
         "accesstomemory-install.service"
-        "elasticsearch.service"
+        "accesstomemory-worker.service"
+      ];
+      after = [
         "mysql.service"
+        "elasticsearch.service"
+        "accesstomemory-install.service"
+        "accesstomemory-worker.service"
       ];
       restartTriggers = [ package ];
       inherit path;
