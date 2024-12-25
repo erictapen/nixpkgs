@@ -15,6 +15,13 @@ let
   cfg = config.services.accesstomemory;
   fpm = config.services.phpfpm.pools.accesstomemory;
   package = pkgs.accesstomemory;
+  path = with pkgs; [
+    fop
+    imagemagick
+    ghostscript
+    ffmpeg
+    poppler_utils
+  ];
 in
 # format = pkgs.formats.php { };
 # configPhp = format.generate "config.php" {
@@ -99,13 +106,6 @@ in
       isSystemUser = true;
       group = "accesstomemory";
       home = "/var/lib/accesstomemory";
-      packages = with pkgs; [
-        fop
-        imagemagick
-        ghostscript
-        ffmpeg
-        poppler_utils
-      ];
     };
     users.groups.accesstomemory = { };
 
@@ -166,6 +166,7 @@ in
       ];
       requires = [ "accesstomemory-install.service" ];
       restartTriggers = [ package ];
+      inherit path;
       serviceConfig = {
         Type = "simple";
         StateDirectory = "accesstomemory";
@@ -218,6 +219,7 @@ in
         "mysql.service"
       ];
       restartTriggers = [ package ];
+      inherit path;
     };
 
     services.nginx.enable = true;
