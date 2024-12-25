@@ -16,20 +16,20 @@ let
   fpm = config.services.phpfpm.pools.accesstomemory;
   package = pkgs.accesstomemory;
   format = pkgs.formats.php { };
-  # configPhp = format.generate "config.php" {
-  #   all.propel = {
-  #     class = "sfPropelDatabase";
-  #     param = {
-  #       encoding = "utf8mb4";
-  #       persistent = true;
-  #       pooling = true;
-  #       dsn = "mysql:dbname=accesstomemory;port=3306";
-  #       username = "accesstomemory";
-  #       password = "password";
-  #     };
-  #   };
-  # };
 in
+# configPhp = format.generate "config.php" {
+#   all.propel = {
+#     class = "sfPropelDatabase";
+#     param = {
+#       encoding = "utf8mb4";
+#       persistent = true;
+#       pooling = true;
+#       dsn = "mysql:dbname=accesstomemory;port=3306";
+#       username = "accesstomemory";
+#       password = "password";
+#     };
+#   };
+# };
 {
   options.services.accesstomemory = {
     enable = mkEnableOption "Access to Memory (AtoM) service";
@@ -48,19 +48,21 @@ in
       example = "AtoM - Access to Memory";
       type = types.str;
     };
-    admin.username = mkOption {
-      description = "The admin username";
-      default = "admin";
-      type = types.str;
-    };
-    admin.passwordFile = mkOption {
-      description = "File containing the admin password";
-      type = types.path;
-    };
-    admin.email = mkOption {
-      description = "The admin email address";
-      example = "admin@example.org";
-      type = types.str;
+    admin = {
+      username = mkOption {
+        description = "The admin username";
+        default = "admin";
+        type = types.str;
+      };
+      passwordFile = mkOption {
+        description = "File containing the admin password";
+        type = types.path;
+      };
+      email = mkOption {
+        description = "The admin email address";
+        example = "admin@example.org";
+        type = types.str;
+      };
     };
   };
 
@@ -79,11 +81,11 @@ in
       ensureDatabases = [ "accesstomemory" ];
       ensureUsers = [
         {
-    name = "accesstomemory";
-    ensurePermissions = {
-      "accesstomemory.*" = "ALL PRIVILEGES";
-    };
-  }
+          name = "accesstomemory";
+          ensurePermissions = {
+            "accesstomemory.*" = "ALL PRIVILEGES";
+          };
+        }
       ];
     };
 
@@ -114,7 +116,11 @@ in
 
     systemd.services.accesstomemory-install = {
       description = "Accesstomemory install";
-      after = [ "network.target" ];
+      after = [
+        "network.target"
+        "elasticsearch.service"
+        "mysql.service"
+      ];
       path = [
         package.phpPackage
       ];
@@ -143,8 +149,8 @@ in
           --search-host=localhost \
           --search-port=${toString config.services.elasticsearch.port} \
           --search-index=accesstomemory \
-          --site-title='${lib.escapeShellArg cfg.title}' \
-          --site-description='${lib.escapeShellArg cfg.description}' \
+          --site-title=${lib.escapeShellArg cfg.title} \
+          --site-description=${lib.escapeShellArg cfg.description} \
           --site-base-url='https://${cfg.domain}' \
           --no-confirmation
         # The install script doesn't natively support unix socket connection for the db

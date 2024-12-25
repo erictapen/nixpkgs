@@ -17,6 +17,12 @@ import ../make-test-python.nix (
         services.accesstomemory = {
           enable = true;
           domain = "${serverDomain}";
+          title = "AtoM";
+          description = "An example description";
+          admin = {
+            passwordFile = pkgs.writeText "insecure-password" "thisisnotapassword";
+            email = "admin@${serverDomain}";
+          };
         };
 
         services.nginx.virtualHosts."${serverDomain}" = {
@@ -66,8 +72,6 @@ import ../make-test-python.nix (
       in
       ''
         start_all()
-        server.wait_for_unit("mysql.service")
-        server.wait_for_unit("elasticsearch.service")
         server.wait_for_unit("phpfpm-accesstomemory.service")
         server.succeed("sudo -u accesstomemory ${lib.getExe runUnitTests}")
       '';
