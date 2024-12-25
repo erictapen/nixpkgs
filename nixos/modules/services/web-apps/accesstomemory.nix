@@ -15,21 +15,8 @@ let
   cfg = config.services.accesstomemory;
   fpm = config.services.phpfpm.pools.accesstomemory;
   package = pkgs.accesstomemory;
-  format = pkgs.formats.php { };
-  configPhp = format.generate "config.php" {
-    all.propel = {
-      class = "sfPropelDatabase";
-      param = {
-        encoding = "utf8mb4";
-        persistent = true;
-        pooling = true;
-        dsn = "mysql:dbname=accesstomemory;port=3306";
-        username = "accesstomemory";
-        password = "password";
-      };
-    };
-  };
 in
+# format = pkgs.formats.php { };
 # configPhp = format.generate "config.php" {
 #   all.propel = {
 #     class = "sfPropelDatabase";
@@ -84,7 +71,7 @@ in
     services.mysql = {
       enable = true;
       settings.mysqld = {
-        sql_mode = "ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";
+        sql_mode = "ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES";
         optimizer_switch = "'block_nested_loop=off'";
         bind-address = "127.0.0.1";
       };
@@ -103,7 +90,6 @@ in
       '';
     };
 
-    # unfree
     services.elasticsearch.enable = true;
     services.elasticsearch.package = pkgs.elasticsearch6;
 
