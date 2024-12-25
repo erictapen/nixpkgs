@@ -14,16 +14,11 @@
 let
   php = php82;
   version = "2.8.2";
-  src = applyPatches {
-    src = fetchFromGitHub {
-      owner = "artefactual";
-      repo = "atom";
-      rev = "dev/php-80-update";
-      hash = "sha256-snU/yZ/5BN1lkDfAcwvl5F3wKRqEqbylcXemGbwi6P8=";
-    };
-    patches = [
-      # ./dev.patch
-    ];
+  src = fetchFromGitHub {
+    owner = "artefactual";
+    repo = "atom";
+    rev = "dev/php-80-update";
+    hash = "sha256-snU/yZ/5BN1lkDfAcwvl5F3wKRqEqbylcXemGbwi6P8=";
   };
   frontend = buildNpmPackage rec {
     pname = "accesstomemory-frontend";

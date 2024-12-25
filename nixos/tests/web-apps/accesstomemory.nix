@@ -53,7 +53,8 @@ import ../make-test-python.nix (
         security.pki.certificateFiles = [ certs.ca.cert ];
       };
 
-    testScript = { nodes }:
+    testScript =
+      { nodes }:
       let
         # Unit tests need a running database
         runUnitTests = pkgs.writeShellApplication {
