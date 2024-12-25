@@ -118,12 +118,7 @@ in
         imagemagick
         ghostscript
         ffmpeg
-        # poppler-utils
-
-        # Only for development of the module
-        package.phpPackage
-        package.phpPackage.packages.composer
-        (phpunit.override { php = package.phpPackage; })
+        poppler_utils
       ];
     };
     users.groups.accesstomemory = { };
