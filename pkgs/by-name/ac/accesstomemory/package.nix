@@ -4,12 +4,12 @@
   buildNpmPackage,
   fetchNpmDeps,
   lessc,
-  php82,
+  php83,
   nixosTests,
 }:
 
 let
-  php = php82.buildEnv (
+  php = php83.buildEnv (
     {
       extensions = (
         { all, enabled }:
