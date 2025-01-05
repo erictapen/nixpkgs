@@ -1,6 +1,7 @@
 {
   lib,
   fetchFromGitHub,
+  applyPatches,
   buildNpmPackage,
   fetchNpmDeps,
   lessc,
@@ -29,11 +30,14 @@ let
     }
   );
   version = "2.8.2";
-  src = fetchFromGitHub {
-    owner = "artefactual";
-    repo = "atom";
-    rev = "dev/php-80-update";
-    hash = "sha256-snU/yZ/5BN1lkDfAcwvl5F3wKRqEqbylcXemGbwi6P8=";
+  src = applyPatches {
+    src = fetchFromGitHub {
+      owner = "artefactual";
+      repo = "atom";
+      rev = "dev/php-80-update";
+      hash = "sha256-snU/yZ/5BN1lkDfAcwvl5F3wKRqEqbylcXemGbwi6P8=";
+    };
+    patches = [ ./unix-socket.patch ];
   };
   meta = with lib; {
     description = "Open-source, web application for archival description and public access";

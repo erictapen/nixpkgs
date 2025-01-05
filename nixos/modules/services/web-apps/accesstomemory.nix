@@ -8,9 +8,9 @@ let
   inherit (lib)
     mkEnableOption
     mkOption
+    types
     mapAttrs
     mkDefault
-    types
     ;
   cfg = config.services.accesstomemory;
   fpm = config.services.phpfpm.pools.accesstomemory;
@@ -23,27 +23,13 @@ let
     poppler_utils
   ];
 in
-# format = pkgs.formats.php { };
-# configPhp = format.generate "config.php" {
-#   all.propel = {
-#     class = "sfPropelDatabase";
-#     param = {
-#       encoding = "utf8mb4";
-#       persistent = true;
-#       pooling = true;
-#       dsn = "mysql:dbname=accesstomemory;port=3306";
-#       username = "accesstomemory";
-#       password = "password";
-#     };
-#   };
-# };
 {
   options.services.accesstomemory = {
     enable = mkEnableOption "Access to Memory (AtoM) service";
-    domain = lib.mkOption {
+    domain = mkOption {
       description = "The domain name serving your AtoM instance.";
       example = "atom.example.org";
-      type = lib.types.str;
+      type = types.str;
     };
     title = mkOption {
       description = "Site title";
@@ -86,15 +72,14 @@ in
       # https://www.accesstomemory.org/en/docs/2.8/admin-manual/installation/ubuntu/#mysql
       package = pkgs.percona-server_8_0;
       ensureDatabases = [ "accesstomemory" ];
-      # TODO make atom work with connection by unix socket
-      initialScript = pkgs.writeText "set-password.sql" ''
-        CREATE USER IF NOT EXISTS 'accesstomemory'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY 'password';
-        FLUSH PRIVILEGES;
-        GRANT ALL PRIVILEGES ON accesstomemory.* TO 'accesstomemory'@'localhost' WITH GRANT OPTION;
-        FLUSH PRIVILEGES;
-        UPDATE mysql.user SET Host = 'localhost' WHERE User = 'accesstomemory';
-        FLUSH PRIVILEGES;
-      '';
+      ensureUsers = [
+        {
+          name = "accesstomemory";
+          ensurePermissions = {
+            "accesstomemory.*" = "ALL PRIVILEGES";
+          };
+        }
+      ];
     };
 
     services.elasticsearch.enable = true;
@@ -134,10 +119,11 @@ in
         php -d memory_limit=4G \
           symfony tools:install \
           --database-host=localhost \
-          --database-port=${toString config.services.mysql.settings.mysqld.port} \
+          --database-port=9999 \
           --database-name=accesstomemory \
           --database-user=accesstomemory \
-          --database-password=password \
+          --database-password=passwordthatisnotactuallyused \
+          --database-unix-socket=/run/mysqld/mysqld.sock \
           --admin-email='${cfg.admin.email}' \
           --admin-username='${cfg.admin.username}' \
           --admin-password="$(cat ${cfg.admin.passwordFile})" \
