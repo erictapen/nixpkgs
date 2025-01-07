@@ -91,6 +91,7 @@ in
       isSystemUser = true;
       group = "accesstomemory";
       home = "/var/lib/accesstomemory";
+      packages = [ package.phpPackage ];
     };
     users.groups.accesstomemory = { };
 
