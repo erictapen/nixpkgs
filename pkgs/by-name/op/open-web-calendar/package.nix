@@ -1,8 +1,9 @@
 {
   lib,
   python3,
-  fetchPypi,
+  fetchFromGitHub,
   nixosTests,
+  git,
 
   defaultSpecificationFile ? null,
 }:
@@ -15,10 +16,12 @@ python.pkgs.buildPythonApplication (finalAttrs: {
   version = "1.51";
   pyproject = true;
 
-  src = fetchPypi {
-    inherit (finalAttrs) version;
-    pname = "open_web_calendar";
-    hash = "sha256-r+7ZKdNOhjnjE1MBNAkni4Rrpx4DMRhUaP1Mmk5wzOo=";
+  src = fetchFromGitHub {
+    owner = "niccokunzmann";
+    repo = "open-web-calendar";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-fAQtzOZ/ntaHljbfWB+87aQpkNai/sfvEiXN15lr0xg=";
+    leaveDotGit = true;
   };
 
   # The Pypi tarball doesn't contain open_web_calendars/features
@@ -34,6 +37,11 @@ python.pkgs.buildPythonApplication (finalAttrs: {
     hatchling
     hatch-vcs
     hatch-requirements-txt
+  ];
+
+  nativeBuildInputs = [
+    # For hatch-vcs
+    git
   ];
 
   dependencies =
