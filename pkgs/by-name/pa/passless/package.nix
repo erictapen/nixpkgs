@@ -28,15 +28,24 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   buildInputs = [
     udev
+    # tpm2-tss
   ];
 
-  env.completions = "target/${stdenv.targetPlatform.config}/release/completions";
-
   postInstall = ''
-    # installShellCompletion --cmd passless \
-    #   --bash $completions/${finalAttrs.pname}.bash \
-    #   --fish $completions/${finalAttrs.pname}.fish \
-    #   --zsh $completions/_${finalAttrs.pname}
+    install -Dm644 contrib/udev/* $out/etc/udev/rules.d
+
+    # target/x86_64-unknown-linux-gnu/release/build/passless-rs-46cc273685f7f560/out/completions
+    export COMPLETIONS="target/${stdenv.targetPlatform.config}/$cargoBuildType/build/passless-rs-*/out/completions"
+
+    echo $COMPLETIONS
+    ls -la $COMPLETIONS
+
+    installShellCompletion --cmd passless \
+      --bash $COMPLETIONS/passless.bash \
+      --fish $COMPLETIONS/passless.fish \
+      --zsh $COMPLETIONS/_passless
   '';
+
+  meta.mainProgram = "passless";
 
 })
